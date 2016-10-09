@@ -1,6 +1,8 @@
 package com.myframework.db;
 
 import java.io.Serializable;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * The Class DBInfo.
@@ -9,12 +11,17 @@ import java.io.Serializable;
  */
 public class DBInfo implements Serializable
 {
-	/** 默认数据库ID */
-	public static final Long CONNID_DEFAULT = 0L;
-	/** 读数据库ID */
-	public static final Long CONNID_READ = 1L;
-	/** 写数据库ID */
-	public static final Long CONNID_WRITE = 2L;
+	/** 数据库ID-map */
+	public static final long CONNID_MIN = 0L;
+	public static final Map<Long, String> CONNID_MAP = new Hashtable<Long, String>()
+	{
+		{
+			put(CONNID_MIN, DBConfig.CONFIG_DEFAULT);
+			put(CONNID_MIN + 1L, DBConfig.CONFIG_READ);
+			put(CONNID_MIN + 2L, DBConfig.CONFIG_WRITE);
+		}
+	};
+
 	/** 数据库状态 停用 0 */
 	public static final String STATUS_STOP = "0";
 	/** 数据库状态 启用 1 */
@@ -112,27 +119,33 @@ public class DBInfo implements Serializable
 		this.dbHouseKeepingSleepTime = dbHouseKeepingSleepTime;
 	}
 
-	public Long getConnId() {
+	public Long getConnId()
+	{
 		return connId;
 	}
 
-	public void setConnId(Long connId) {
+	public void setConnId(Long connId)
+	{
 		this.connId = connId;
 	}
 
-	public String getConnCode() {
+	public String getConnCode()
+	{
 		return connCode;
 	}
 
-	public void setConnCode(String connCode) {
+	public void setConnCode(String connCode)
+	{
 		this.connCode = connCode;
 	}
 
-	public String getDbStatus() {
+	public String getDbStatus()
+	{
 		return dbStatus;
 	}
 
-	public void setDbStatus(String dbStatus) {
+	public void setDbStatus(String dbStatus)
+	{
 		this.dbStatus = dbStatus;
 	}
 }

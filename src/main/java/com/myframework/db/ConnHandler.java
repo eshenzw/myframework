@@ -1,7 +1,11 @@
 package com.myframework.db;
 
+import com.myframework.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * 
@@ -30,26 +34,14 @@ public final class ConnHandler
 	 */
 	public static DBInfo getConnDBInfoById(Long connId)
 	{
-		if (connId == null || connId.equals(DBInfo.CONNID_DEFAULT)
-				|| connId.equals(DBInfo.CONNID_READ)
-				|| connId.equals(DBInfo.CONNID_WRITE))
+		if (connId == null || DBInfo.CONNID_MAP.containsKey(connId))
 		{
 			DBConfig dbConfig = null;
-			if(connId.equals(DBInfo.CONNID_DEFAULT))
-			{
-				dbConfig = DBConfig.getInstance();
-			}
-			else if(connId.equals(DBInfo.CONNID_READ))
-			{
-				dbConfig = DBConfig.getRead();
-			}
-			else if(connId.equals(DBInfo.CONNID_WRITE))
-			{
-				dbConfig = DBConfig.getWrite();
-			}
+			dbConfig = DBConfig.getInstance(DBInfo.CONNID_MAP.get(connId));
+			//
 			DBInfo dbInfo = new DBInfo();
-			dbInfo.setConnId(DBInfo.CONNID_DEFAULT);
-			dbInfo.setConnCode("default");
+			dbInfo.setConnId(connId);
+			dbInfo.setConnCode(DBInfo.CONNID_MAP.get(connId));
 			dbInfo.setDbStatus(DBInfo.STATUS_RUN);
 			dbInfo.setDbDirver(dbConfig.getJdbcClass());
 			dbInfo.setDbUrl(dbConfig.getJdbcUrl());
@@ -57,7 +49,7 @@ public final class ConnHandler
 			dbInfo.setDbPassword(dbConfig.getJdbcPassword());
 			dbInfo.setDbMinimumConnectionCount(50);
 			dbInfo.setDbMaximumConnectionCount(150);
-			dbInfo.setDbHouseKeepingSleepTime(5*60*1000);
+			dbInfo.setDbHouseKeepingSleepTime(5 * 60 * 1000);
 			return dbInfo;
 		}
 		return null;
@@ -65,8 +57,8 @@ public final class ConnHandler
 
 	public static final int DATASOURCE_SUCCESS = 0;
 	public static final int DATASOURCE_FAIL = 1;
-	public static final int DATASOURCE_TENANT_NULL = 101;
-	public static final int DATASOURCE_TENANT_STOPED = 102;
+	public static final int DATASOURCE_CONN_NULL = 101;
+	public static final int DATASOURCE_CONN_STOPED = 102;
 	public static final int DATASOURCE_SEVER_ERROR = 103;
 
 	/**
@@ -80,7 +72,7 @@ public final class ConnHandler
 		if (dbInfo == null)
 		{
 			LOGGER.info("数据源连接切换失败，链接信息为空！");
-			return DATASOURCE_TENANT_NULL;
+			return DATASOURCE_CONN_NULL;
 		}
 
 		try
@@ -92,11 +84,10 @@ public final class ConnHandler
 			else
 			{
 				if (dbInfo.STATUS_STOP.equals(dbInfo.getDbStatus())
-						|| dbInfo.STATUS_FORBIDDEN.equals(dbInfo.getDbStatus())
-						|| "3".equals(dbInfo.getDbStatus()))
+						|| dbInfo.STATUS_FORBIDDEN.equals(dbInfo.getDbStatus()) || "3".equals(dbInfo.getDbStatus()))
 				{
 					LOGGER.info("企业[{}]数据源连接切换失败，已经销户或停用！", dbInfo.getConnCode());
-					return DATASOURCE_TENANT_STOPED;
+					return DATASOURCE_CONN_STOPED;
 				}
 			}
 		}
@@ -119,10 +110,10 @@ public final class ConnHandler
 	 */
 	public static int switchConnection(Long connId)
 	{
-		if (connId == null || connId < 0)
+		if (connId == null || connId < DBInfo.CONNID_MIN)
 		{
 			LOGGER.info("数据源连接切换失败，链接信息为空！");
-			return DATASOURCE_TENANT_NULL;
+			return DATASOURCE_CONN_NULL;
 		}
 
 		try
@@ -135,11 +126,10 @@ public final class ConnHandler
 			{
 				DBInfo dbInfo = ConnHandler.getConnDBInfoById(connId);
 				if (dbInfo.STATUS_STOP.equals(dbInfo.getDbStatus())
-						|| dbInfo.STATUS_FORBIDDEN.equals(dbInfo.getDbStatus())
-						|| "3".equals(dbInfo.getDbStatus()))
+						|| dbInfo.STATUS_FORBIDDEN.equals(dbInfo.getDbStatus()) || "3".equals(dbInfo.getDbStatus()))
 				{
 					LOGGER.info("企业[{}]数据源连接切换失败，已经销户或停用！", dbInfo.getConnCode());
-					return DATASOURCE_TENANT_STOPED;
+					return DATASOURCE_CONN_STOPED;
 				}
 			}
 		}
@@ -152,5 +142,34 @@ public final class ConnHandler
 			return DATASOURCE_SEVER_ERROR;
 		}
 		return DATASOURCE_FAIL;
+	}
+
+	/**
+	 * 切换数据源连接
+	 *
+	 * * @param dbName
+	 * @return 数据源切换成功与否 true/false
+	 */
+	public static int switchConnection(String dbName)
+	{
+		if (StringUtil.isEmpty(dbName) || !DBInfo.CONNID_MAP.containsValue(dbName))
+		{
+			LOGGER.warn("链接[{}]数据源连接切换失败，原因：{}", new Object[]
+			{
+				dbName, "配置文件没有配置该数据源！"
+			});
+			return DATASOURCE_CONN_NULL;
+		}
+		Iterator it = DBInfo.CONNID_MAP.entrySet().iterator();
+		Long connId = null;
+		while (it.hasNext())
+		{
+			Map.Entry entry = (Map.Entry) it.next();
+			if (entry.getValue().equals(dbName))
+			{
+				connId = (Long) entry.getKey();
+			}
+		}
+		return switchConnection(connId);
 	}
 }

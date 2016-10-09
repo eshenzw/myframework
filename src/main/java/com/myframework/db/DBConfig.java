@@ -2,6 +2,7 @@ package com.myframework.db;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
@@ -20,13 +21,11 @@ import com.myframework.util.StringUtil;
 public final class DBConfig
 {
 	/** JDBC配置文件路径. */
-	private static final String CONFIG_DEFAULT = "default";
-	private static final String CONFIG_READ = "read";
-	private static final String CONFIG_WRITE = "write";
+	public static final String CONFIG_DEFAULT = "db";
+	public static final String CONFIG_READ = "readdb";
+	public static final String CONFIG_WRITE = "writedb";
 	/** 单体实例. */
-	private static DBConfig instance;
-	private static DBConfig read;
-	private static DBConfig write;
+	private static Map<String, DBConfig> instanceMap = new Hashtable<String, DBConfig>();
 	/** 使用数据源作为连接获取方式时，JNDI 的名称. */
 	private String jndiName;
 	/** jdbc 驱动类. */
@@ -48,11 +47,11 @@ public final class DBConfig
 
 	/**
 	 * 非公开构造函数，读取初始化参数.
-	 * type:：CONFIG_READ 读库config   CONFIG_WRITE ：写库config
+	 * dbName:：CONFIG_READ 读库config   CONFIG_WRITE ：写库config
 	 */
-	private DBConfig(String type)
+	private DBConfig(String dbName)
 	{
-		this.loadConfig(type);
+		this.loadConfig(dbName);
 	}
 
 	/**
@@ -62,11 +61,11 @@ public final class DBConfig
 	 */
 	public static synchronized DBConfig getInstance()
 	{
-		if (instance == null)
+		if (!instanceMap.containsKey(CONFIG_DEFAULT))
 		{
-			instance = new DBConfig();
+			instanceMap.put(CONFIG_DEFAULT, new DBConfig());
 		}
-		return instance;
+		return instanceMap.get(CONFIG_DEFAULT);
 	}
 
 	/**
@@ -74,54 +73,39 @@ public final class DBConfig
 	 *
 	 * @return the read
 	 */
-	public static synchronized DBConfig getRead()
+	public static synchronized DBConfig getInstance(String dbName)
 	{
-		if (read == null)
+		if (!instanceMap.containsKey(dbName))
 		{
-			read = new DBConfig(CONFIG_WRITE);
+			instanceMap.put(dbName, new DBConfig(dbName));
 		}
-		return read;
-	}
-
-	/**
-	 * 单例方法.
-	 *
-	 * @return the write
-	 */
-	public static synchronized DBConfig getWrite()
-	{
-		if (write == null)
-		{
-			write = new DBConfig(CONFIG_READ);
-		}
-		return write;
+		return instanceMap.get(dbName);
 	}
 
 	/**
 	 * 读取参数配置.
 	 */
-	private void loadConfig(String type)
+	private void loadConfig(String dbName)
 	{
 		InputStream streamIn = DBConfig.class.getClassLoader().getResourceAsStream(Constants.JDBC_FILE_PATH);
 		try
 		{
-			if(StringUtil.isEmpty(type) || CONFIG_DEFAULT.equals(type))
+			if (StringUtil.isEmpty(dbName) || CONFIG_DEFAULT.equals(dbName))
 			{
-				loadConfig(streamIn);
+				loadConfig(streamIn, CONFIG_DEFAULT);
 			}
-			else if(CONFIG_READ.equals(type))
+			else
 			{
-				loadReadConfig(streamIn);
-			}
-			else if(CONFIG_WRITE.equals(type))
-			{
-				loadWriteConfig(streamIn);
+				loadConfig(streamIn, dbName);
 			}
 			DesUtils des = new DesUtils();// 自定义密钥
 			this.setJdbcPassword(des.decrypt(this.getJdbcPassword()));
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
-		} finally
+		}
+		finally
 		{
 			if (streamIn != null)
 			{
@@ -143,7 +127,7 @@ public final class DBConfig
 	 * @param streamIn
 	 *            the stream in
 	 */
-	private void loadConfig(InputStream streamIn)
+	private void loadConfig(InputStream streamIn, String dbName)
 	{
 		try
 		{
@@ -151,65 +135,11 @@ public final class DBConfig
 			prop.load(streamIn);
 			Map jdbcPM = new Hashtable();
 			jdbcPM = prop;
-			this.jndiName = propertyConverter(prop.getProperty("db.jndiName"), jdbcPM);
-			this.jdbcClass = propertyConverter(prop.getProperty("db.driver"), jdbcPM);
-			this.jdbcUrl = propertyConverter(prop.getProperty("db.url"), jdbcPM);
-			this.jdbcUserName = propertyConverter(prop.getProperty("db.username"), jdbcPM);
-			this.jdbcPassword = propertyConverter(prop.getProperty("db.password"), jdbcPM);
-		}
-		catch (IOException ex)
-		{
-			System.err.println("ERROR jdbc.properties file failed. Please Check this file is exist in classes path.");
-			ex.printStackTrace();
-		}
-	}
-
-	/**
-	 * 从流中读取配置（读数据库）.
-	 *
-	 * @param streamIn
-	 *            the stream in
-	 */
-	private void loadReadConfig(InputStream streamIn)
-	{
-		try
-		{
-			Properties prop = new Properties();
-			prop.load(streamIn);
-			Map jdbcPM = new Hashtable();
-			jdbcPM = prop;
-			this.jndiName = propertyConverter(prop.getProperty("readdb.jndiName"), jdbcPM);
-			this.jdbcClass = propertyConverter(prop.getProperty("readdb.driver"), jdbcPM);
-			this.jdbcUrl = propertyConverter(prop.getProperty("readdb.url"), jdbcPM);
-			this.jdbcUserName = propertyConverter(prop.getProperty("readdb.username"), jdbcPM);
-			this.jdbcPassword = propertyConverter(prop.getProperty("readdb.password"), jdbcPM);
-		}
-		catch (IOException ex)
-		{
-			System.err.println("ERROR jdbc.properties file failed. Please Check this file is exist in classes path.");
-			ex.printStackTrace();
-		}
-	}
-
-	/**
-	 * 从流中读取配置（写数据库）.
-	 *
-	 * @param streamIn
-	 *            the stream in
-	 */
-	private void loadWriteConfig(InputStream streamIn)
-	{
-		try
-		{
-			Properties prop = new Properties();
-			prop.load(streamIn);
-			Map jdbcPM = new Hashtable();
-			jdbcPM = prop;
-			this.jndiName = propertyConverter(prop.getProperty("writedb.jndiName"), jdbcPM);
-			this.jdbcClass = propertyConverter(prop.getProperty("writedb.driver"), jdbcPM);
-			this.jdbcUrl = propertyConverter(prop.getProperty("writedb.url"), jdbcPM);
-			this.jdbcUserName = propertyConverter(prop.getProperty("writedb.username"), jdbcPM);
-			this.jdbcPassword = propertyConverter(prop.getProperty("writedb.password"), jdbcPM);
+			this.jndiName = propertyConverter(prop.getProperty(String.format("%s.jndiName", dbName)), jdbcPM);
+			this.jdbcClass = propertyConverter(prop.getProperty(String.format("%s.driver", dbName)), jdbcPM);
+			this.jdbcUrl = propertyConverter(prop.getProperty(String.format("%s.url", dbName)), jdbcPM);
+			this.jdbcUserName = propertyConverter(prop.getProperty(String.format("%s.username", dbName)), jdbcPM);
+			this.jdbcPassword = propertyConverter(prop.getProperty(String.format("%s.password", dbName)), jdbcPM);
 		}
 		catch (IOException ex)
 		{
@@ -441,18 +371,17 @@ public final class DBConfig
 	 * @param args
 	 *            the arguments
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception
+	{
 		//
-		DBConfig jc = new DBConfig(CONFIG_READ);
+		DBConfig jc = new DBConfig(CONFIG_DEFAULT);
 		jc.test();
 		jc.test2();
 		DesUtils des = new DesUtils();// 自定义密钥
 		String testDes = "parttime2016";
 		System.out.println("加密后的密码：" + des.encrypt(testDes));
 		System.out.println("解密后的密码：" + des.decrypt(des.encrypt(testDes)));
-		System.out.println("数据库配置:driver="+jc.getJdbcClass()
-									+"\n url="+jc.getJdbcUrl()
-									+"\n username="+jc.getJdbcUserName()
-									+"\n password="+jc.getJdbcPassword());
+		System.out.println("数据库配置:driver=" + jc.getJdbcClass() + "\n url=" + jc.getJdbcUrl() + "\n username="
+				+ jc.getJdbcUserName() + "\n password=" + jc.getJdbcPassword());
 	}
 }

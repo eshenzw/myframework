@@ -118,14 +118,15 @@ public class DynamicDataSource extends AbstractRoutingDataSource
 		if (connId == null && currentConnId != null)
 		{
 			connId = currentConnId.get();
-			if(connId == null){
-				connId = DBInfo.CONNID_DEFAULT;
+			if (connId == null)
+			{
+				connId = DBInfo.CONNID_MIN;
 				RegisterConnDatasource.getConnDatasource(connId);
 			}
 		}
 		// 根据数据源IDID取得数据源
 		Connection conn = null;
-		if (connId != null && connId >= 0)
+		if (connId != null && connId >= DBInfo.CONNID_MIN)
 		{
 			DataSource ds = connDataSources.get(connId);
 			if (ds != null)
@@ -171,7 +172,8 @@ public class DynamicDataSource extends AbstractRoutingDataSource
 	public static void setCurConn(Long connId)
 	{
 
-		// logger.debug("设置数据源IDID到线程中,threadLocal:{},thread:{},数据源ID{}", new Object[]
+		// logger.debug("设置数据源IDID到线程中,threadLocal:{},thread:{},数据源ID{}", new
+		// Object[]
 		// {
 		// currentConnId, Thread.currentThread().getId(), connId
 		// });
