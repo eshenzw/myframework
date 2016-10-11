@@ -41,7 +41,7 @@ public final class ConnHandler
 			//
 			DBInfo dbInfo = new DBInfo();
 			dbInfo.setConnId(connId);
-			dbInfo.setConnCode(DBInfo.CONNID_MAP.get(connId));
+			dbInfo.setConnCode(DBInfo.CONNID_MAP.get(connId).getName());
 			dbInfo.setDbStatus(DBInfo.STATUS_RUN);
 			dbInfo.setDbDirver(dbConfig.getJdbcClass());
 			dbInfo.setDbUrl(dbConfig.getJdbcUrl());
@@ -150,13 +150,13 @@ public final class ConnHandler
 	 * * @param dbName
 	 * @return 数据源切换成功与否 true/false
 	 */
-	public static int switchConnection(String dbName)
+	public static int switchConnection(DBConfig.DbEnum dbEnum)
 	{
-		if (StringUtil.isEmpty(dbName) || !DBInfo.CONNID_MAP.containsValue(dbName))
+		if (!DBInfo.CONNID_MAP.containsValue(dbEnum))
 		{
 			LOGGER.warn("链接[{}]数据源连接切换失败，原因：{}", new Object[]
 			{
-				dbName, "配置文件没有配置该数据源！"
+				dbEnum.getName(), "配置文件没有配置该数据源！"
 			});
 			return DATASOURCE_CONN_NULL;
 		}
@@ -165,7 +165,7 @@ public final class ConnHandler
 		while (it.hasNext())
 		{
 			Map.Entry entry = (Map.Entry) it.next();
-			if (entry.getValue().equals(dbName))
+			if (entry.getValue().equals(dbEnum))
 			{
 				connId = (Long) entry.getKey();
 			}

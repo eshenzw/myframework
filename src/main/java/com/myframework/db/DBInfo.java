@@ -6,19 +6,20 @@ import java.util.Map;
 
 /**
  * The Class DBInfo.
- * 
+ *
  * @author zw
  */
 public class DBInfo implements Serializable
 {
 	/** 数据库ID-map */
 	public static final long CONNID_MIN = 0L;
-	public static final Map<Long, String> CONNID_MAP = new Hashtable<Long, String>()
+	public static final Map<Long, DBConfig.DbEnum> CONNID_MAP = new Hashtable<Long, DBConfig.DbEnum>()
 	{
 		{
-			put(CONNID_MIN, DBConfig.CONFIG_DEFAULT);
-			put(CONNID_MIN + 1L, DBConfig.CONFIG_READ);
-			put(CONNID_MIN + 2L, DBConfig.CONFIG_WRITE);
+			for (DBConfig.DbEnum dbEnum : DBConfig.DbEnum.values())
+			{
+				put(CONNID_MIN + dbEnum.getIndex(), dbEnum);
+			}
 		}
 	};
 

@@ -120,7 +120,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource
 			connId = currentConnId.get();
 			if (connId == null)
 			{
-				connId = DBInfo.CONNID_MIN;
+				connId = DBInfo.CONNID_MIN+DBConfig.DbEnum.DEFAULT.getIndex();
 				RegisterConnDatasource.getConnDatasource(connId);
 			}
 		}

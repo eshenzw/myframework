@@ -20,10 +20,29 @@ import com.myframework.util.StringUtil;
  */
 public final class DBConfig
 {
-	/** JDBC配置文件路径. */
-	public static final String CONFIG_DEFAULT = "db";
-	public static final String CONFIG_READ = "readdb";
-	public static final String CONFIG_WRITE = "writedb";
+	public enum DbEnum
+	{
+		DEFAULT("db", 0), READ("readdb", 1), WRITE("writedb", 2);
+		private String name;
+		private int index;
+
+		private DbEnum(String name, int index)
+		{
+			this.name = name;
+			this.index = index;
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public int getIndex()
+		{
+			return index;
+		}
+	}
+
 	/** 单体实例. */
 	private static Map<String, DBConfig> instanceMap = new Hashtable<String, DBConfig>();
 	/** 使用数据源作为连接获取方式时，JNDI 的名称. */
@@ -42,16 +61,16 @@ public final class DBConfig
 	 */
 	private DBConfig()
 	{
-		this.loadConfig(CONFIG_DEFAULT);
+		this.loadConfig(DbEnum.DEFAULT.getName());
 	}
 
 	/**
 	 * 非公开构造函数，读取初始化参数.
 	 * dbName:：CONFIG_READ 读库config   CONFIG_WRITE ：写库config
 	 */
-	private DBConfig(String dbName)
+	private DBConfig(DbEnum dbEnum)
 	{
-		this.loadConfig(dbName);
+		this.loadConfig(dbEnum.getName());
 	}
 
 	/**
@@ -61,11 +80,11 @@ public final class DBConfig
 	 */
 	public static synchronized DBConfig getInstance()
 	{
-		if (!instanceMap.containsKey(CONFIG_DEFAULT))
+		if (!instanceMap.containsKey(DbEnum.DEFAULT.getName()))
 		{
-			instanceMap.put(CONFIG_DEFAULT, new DBConfig());
+			instanceMap.put(DbEnum.DEFAULT.getName(), new DBConfig());
 		}
-		return instanceMap.get(CONFIG_DEFAULT);
+		return instanceMap.get(DbEnum.DEFAULT.getName());
 	}
 
 	/**
@@ -73,13 +92,13 @@ public final class DBConfig
 	 *
 	 * @return the read
 	 */
-	public static synchronized DBConfig getInstance(String dbName)
+	public static synchronized DBConfig getInstance(DbEnum dbEnum)
 	{
-		if (!instanceMap.containsKey(dbName))
+		if (!instanceMap.containsKey(dbEnum.getName()))
 		{
-			instanceMap.put(dbName, new DBConfig(dbName));
+			instanceMap.put(dbEnum.getName(), new DBConfig(dbEnum));
 		}
-		return instanceMap.get(dbName);
+		return instanceMap.get(dbEnum.getName());
 	}
 
 	/**
@@ -90,9 +109,9 @@ public final class DBConfig
 		InputStream streamIn = DBConfig.class.getClassLoader().getResourceAsStream(Constants.JDBC_FILE_PATH);
 		try
 		{
-			if (StringUtil.isEmpty(dbName) || CONFIG_DEFAULT.equals(dbName))
+			if (StringUtil.isEmpty(dbName) || DbEnum.DEFAULT.getName().equals(dbName))
 			{
-				loadConfig(streamIn, CONFIG_DEFAULT);
+				loadConfig(streamIn, DbEnum.DEFAULT.getName());
 			}
 			else
 			{
@@ -374,7 +393,7 @@ public final class DBConfig
 	public static void main(String[] args) throws Exception
 	{
 		//
-		DBConfig jc = new DBConfig(CONFIG_DEFAULT);
+		DBConfig jc = new DBConfig(DbEnum.DEFAULT);
 		jc.test();
 		jc.test2();
 		DesUtils des = new DesUtils();// 自定义密钥
