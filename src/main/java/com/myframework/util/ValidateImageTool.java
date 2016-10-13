@@ -10,7 +10,7 @@ import java.util.Random;
  * @author author
  * @version 2.0
  */
-public class ImageTool
+public class ValidateImageTool
 {
 
 	// 图片的宽度。
@@ -28,24 +28,24 @@ public class ImageTool
 
 	Random random = new Random();
 
-	public ImageTool()
+	public ValidateImageTool()
 	{
 	}
 
-	public ImageTool(int width, int height)
+	public ValidateImageTool(int width, int height)
 	{
 		this.width = width;
 		this.height = height;
 	}
 
-	public ImageTool(int width, int height, int codeCount)
+	public ValidateImageTool(int width, int height, int codeCount)
 	{
 		this.width = width;
 		this.height = height;
 		this.codeCount = codeCount;
 	}
 
-	public ImageTool(int width, int height, int codeCount, int lineCount)
+	public ValidateImageTool(int width, int height, int codeCount, int lineCount)
 	{
 		this.width = width;
 		this.height = height;

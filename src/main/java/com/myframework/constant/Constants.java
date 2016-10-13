@@ -187,4 +187,6 @@ public final class Constants
 	/** 排序号 */
 	public final static BigDecimal DEFAULT_SEQU = BigDecimal.valueOf(99999);
 
+	/**上传根目录*/
+	public final static String UPLOAD_ROOT_PATH = "";
 }

@@ -1,9 +1,6 @@
 package com.myframework.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.cert.CertificateException;
@@ -890,5 +887,54 @@ public final class HttpUtil
 		}
 
 		return httpClient;
+	}
+
+	/**
+	 * 给远程URL传送文件
+	 *
+	 * @param fileName
+	 * @param connectUrl
+	 * @throws Exception
+	 */
+	public static String uploadFiles(String fileName, String connectUrl) throws Exception {
+		return uploadFiles(fileName, connectUrl, "UTF-8");
+	}
+
+	/**
+	 *
+	 * @param fileName
+	 * @param connectUrl
+	 * @param charset
+	 * @throws Exception
+	 */
+	public static String uploadFiles(String fileName, String connectUrl, String charset) throws Exception {
+		URL url = new URL(connectUrl);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		// 发送POST请求必须设置如下两行
+		conn.setDoOutput(true);
+		conn.setDoInput(true);
+		conn.setUseCaches(false);
+		conn.setRequestMethod("POST");
+		conn.setRequestProperty("Charsert", charset);
+		conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=---------");
+		OutputStream out = conn.getOutputStream();
+		File file = new File(fileName);
+		DataInputStream in = new DataInputStream(new FileInputStream(file));
+		int bytes = 0;
+		byte[] bufferOut = new byte[1024];
+		while ((bytes = in.read(bufferOut)) != -1) {
+			out.write(bufferOut, 0, bytes);
+		}
+		out.flush();
+		in.close();
+		out.close();
+		// 定义BufferedReader输入流来读取URL的响应
+		BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		String line = null;
+		StringBuilder sb = new StringBuilder();
+		while ((line = reader.readLine()) != null) {
+			sb.append(line);
+		}
+		return sb.toString();
 	}
 }

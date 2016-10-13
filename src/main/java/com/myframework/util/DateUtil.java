@@ -532,6 +532,27 @@ public class DateUtil
 	}
 
 	/**
+	 * 输入 yyyy-MM-dd hh:mm:ss  返回几天前或几个月前
+     */
+	public static String getDateInterval(String date) throws ParseException {
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//小写的mm表示的是分钟
+		Long result = new Date().getTime() - sdf.parse(date).getTime();
+		if(result < 60 * 1000)
+			return "" + result/1000 + "秒";
+		if(result < 60 * 60 * 1000)
+			return "" + result/(60*1000) + "分钟";
+		if(result < 24 * 60 * 60 * 1000)
+			return "" + result/(60*60*1000) + "小时";
+		if(result < 30 * 24 * 60 * 60 * 1000)
+			return "" + result/(24*60*60*1000) + "天";
+		if(result < 12 * 30 * 24 * 60 * 60 * 1000)
+			return "" + result/(30*24*60*60*1000) + "个月";
+		if(result >= 12 * 30 * 24 * 60 * 60 * 1000)
+			return "" + result/(12*30*24*60*60*1000) + "年";
+		return "";
+	}
+
+	/**
 	 * 作用：为指定的日期增加或减少天数
 	 * 
 	 * @param date
