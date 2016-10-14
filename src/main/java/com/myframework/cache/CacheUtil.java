@@ -11,11 +11,19 @@ public class CacheUtil
 {
 	public static Cache getLocalCache(){
 		CacheManager cacheManager = (CacheManager)SpringBeanManager.getBean("guavaCacheManager");
-		return (Cache) cacheManager.getCache(SpringCacheConfig.Caches.localCache.name());
+		if(cacheManager != null && cacheManager.getCacheNames().contains(SpringCacheConfig.Caches.localCache.name())){
+			return (Cache) cacheManager.getCache(SpringCacheConfig.Caches.localCache.name());
+		}else{
+			return new EmptyCache();
+		}
 	}
 
 	public static Cache getShareCache(){
 		CacheManager cacheManager = (CacheManager)SpringBeanManager.getBean("redisCacheManager");
-		return (Cache) cacheManager.getCache(SpringCacheConfig.RedisCaches.shareCache.name());
+		if(cacheManager != null && cacheManager.getCacheNames().contains(SpringCacheConfig.RedisCaches.shareCache.name())) {
+			return (Cache) cacheManager.getCache(SpringCacheConfig.RedisCaches.shareCache.name());
+		}else{
+			return new EmptyCache();
+		}
 	}
 }
