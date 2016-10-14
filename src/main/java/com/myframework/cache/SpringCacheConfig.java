@@ -30,15 +30,17 @@ import com.google.common.cache.CacheBuilder;
 @Configuration
 @EnableCaching(proxyTargetClass = true)
 public class SpringCacheConfig implements CachingConfigurer {
+
     public static final int DEFAULT_MAXSIZE = 50000;
     public static final int DEFAULT_TTL = 10;
 
     /**
+     * 默认Cache定义
      * 定義cache名稱、超時時長（秒）、最大size
      * 每个cache缺省10秒超时、最多缓存50000条数据，需要修改可以在构造方法的参数中指定。
      */
     public enum Caches{
-        commonCache(2*60*60);
+        localCache(2*60*60);
 
         Caches() {
         }
@@ -48,6 +50,43 @@ public class SpringCacheConfig implements CachingConfigurer {
         }
 
         Caches(int ttl, int maxSize) {
+            this.ttl = ttl;
+            this.maxSize = maxSize;
+        }
+
+        private int maxSize=DEFAULT_MAXSIZE;    //最大數量
+        private int ttl=DEFAULT_TTL;        //过期时间（秒）
+
+        public int getMaxSize() {
+            return maxSize;
+        }
+        public void setMaxSize(int maxSize) {
+            this.maxSize = maxSize;
+        }
+        public int getTtl() {
+            return ttl;
+        }
+        public void setTtl(int ttl) {
+            this.ttl = ttl;
+        }
+    }
+
+    /**
+     * RedisCache定义
+     * 定義cache名稱、超時時長（秒）、最大size
+     * 每个cache缺省10秒超时、最多缓存50000条数据，需要修改可以在构造方法的参数中指定。
+     */
+    public enum RedisCaches{
+        shareCache(2*60*60);
+
+        RedisCaches() {
+        }
+
+        RedisCaches(int ttl) {
+            this.ttl = ttl;
+        }
+
+        RedisCaches(int ttl, int maxSize) {
             this.ttl = ttl;
             this.maxSize = maxSize;
         }
@@ -132,7 +171,7 @@ public class SpringCacheConfig implements CachingConfigurer {
         ArrayList<RedisCache> caches = new ArrayList<RedisCache>();
 
         //把各个cache注册到cacheManager中，RedisCache实现了org.springframework.cache.Cache接口
-        for(Caches c: Caches.values()){
+        for(RedisCaches c: RedisCaches.values()){
             caches.add(new RedisCache(redisTemplate, c.name(), c.getTtl()));
         }
         cacheManager.setCaches(caches);
