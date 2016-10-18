@@ -36,8 +36,11 @@ public final class ConnHandler
 	{
 		if (connId == null || DBInfo.CONNID_MAP.containsKey(connId))
 		{
-			DBConfig dbConfig = null;
-			dbConfig = DBConfig.getInstance(DBInfo.CONNID_MAP.get(connId));
+			if (connId == null)
+			{
+				connId = DBInfo.CONNID_MIN + DBConfig.DbEnum.DEFAULT.getIndex();
+			}
+			DBConfig dbConfig = DBConfig.getInstance(DBInfo.CONNID_MAP.get(connId));
 			//
 			DBInfo dbInfo = new DBInfo();
 			dbInfo.setConnId(connId);

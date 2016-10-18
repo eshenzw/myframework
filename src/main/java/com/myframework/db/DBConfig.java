@@ -393,7 +393,7 @@ public final class DBConfig
 	public static void main(String[] args) throws Exception
 	{
 		//
-		DBConfig jc = new DBConfig(DbEnum.DEFAULT);
+		DBConfig jc = new DBConfig(DbEnum.READ);
 		jc.test();
 		jc.test2();
 		DesUtils des = new DesUtils();// 自定义密钥
