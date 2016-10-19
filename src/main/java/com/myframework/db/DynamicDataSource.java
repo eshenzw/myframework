@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -112,9 +114,17 @@ public class DynamicDataSource extends AbstractRoutingDataSource
 	@Override
 	public Connection getConnection() throws SQLException
 	{
-
 		// 获取数据源IDID
-		Long connId = (Long) RequestFilter.getSession().getAttribute(SESSION_CONN_KEY);
+		Long connId = null;
+		HttpServletRequest request = RequestFilter.getRequest();
+		if (request != null)
+		{
+			HttpSession session = request.getSession(false);
+			if (session != null)
+			{
+				connId = (Long) session.getAttribute(SESSION_CONN_KEY);
+			}
+		}
 		if (connId == null && currentConnId != null)
 		{
 			connId = currentConnId.get();
