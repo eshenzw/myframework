@@ -1,0 +1,39 @@
+package ${classPackage}.entity;
+<#if classNameWithoutEntity == "User">
+import com.myframework.entity.BaseUserEntity;
+<#else>
+import com.myframework.entity.BaseEntity;
+</#if>
+
+/**
+ * Created by MyFrameWork.AutoCode on ${.now?date}
+ */
+<#if classNameWithoutEntity == "User">
+public class ${className} extends BaseUserEntity {
+<#else>
+public class ${className} extends BaseEntity {
+</#if>
+
+<#assign basePros = ["id","status","createId","createTime","updateId","updateTime"]>
+<#list properties as pro>
+<#if !(basePros?seq_contains(pro.proName))>
+    /*
+     * ${pro.proDescription}
+     */
+	private ${pro.proType} ${pro.proName};
+</#if>
+</#list>
+
+<#list properties as pro>
+<#if !(basePros?seq_contains(pro.proName))>
+    public void set${pro.proMethodName}(${pro.proType} ${pro.proName}) {
+        this.${pro.proName} = ${pro.proName};
+    }
+    
+    public ${pro.proType} get${pro.proMethodName}() {
+        return this.${pro.proName}; 
+    }
+</#if>
+</#list>
+
+}

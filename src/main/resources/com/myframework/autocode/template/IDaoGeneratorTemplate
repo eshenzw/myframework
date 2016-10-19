@@ -1,0 +1,12 @@
+package ${classPackage}.dao;
+
+
+import com.myframework.base.IBaseDao;
+import ${classPackage}.entity.${className};
+
+/**
+ * Created by MyFrameWork.AutoCode on ${.now?date}
+ */
+public interface ${iDaoName} extends IBaseDao<${className}>  {
+
+}

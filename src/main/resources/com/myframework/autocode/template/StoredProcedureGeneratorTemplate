@@ -1,0 +1,14 @@
+<#list properties as pro>
+	-- 导入表：${prefixTableDbName}
+	insert into ${prefixTableDbName}
+	(
+	<#list pro.columnList as pro2>
+		${pro2.columnName}<#if pro2_has_next>,</#if>    -- ${pro2.description}；（示例）${pro2.example}
+	</#list>	
+	)
+	select
+	<#list pro.columnList as pro2>
+		col${pro2_index + 1}<#if pro2_has_next>,</#if>    -- ${pro2.description}；（示例）${pro2.example}
+	</#list>	
+	from table${pro_index + 1}
+</#list>

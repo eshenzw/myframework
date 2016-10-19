@@ -1,0 +1,13 @@
+package ${classPackage}.dao;
+
+import com.myframework.base.BaseDao;
+import ${classPackage}.entity.${className};
+import org.springframework.stereotype.Repository;
+
+/**
+ * Created by MyFrameWork.AutoCode on ${.now?date}
+ */
+@Repository
+public class ${daoName}Impl extends BaseDao<${className}> implements I${classNameWithoutEntity}Dao {
+
+}
