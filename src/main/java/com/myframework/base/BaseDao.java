@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.support.SqlSessionDaoSupport;
@@ -184,11 +185,13 @@ public abstract class BaseDao<T extends BaseEntity> extends SqlSessionDaoSupport
      */
     public void executeBatch(IBatchCallBack callBack)
     {
-        SqlSession session = getSqlSession();
+        SqlSession session = ((SqlSessionTemplate)getSqlSession()).getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
         try
         {
             callBack.doBatchCallBack();
             session.commit();
+            //清理缓存，防止溢出
+            session.clearCache();
         }
         catch (SQLException e)
         {
