@@ -1,4 +1,14 @@
 package ${classPackage}.entity;
+
+import java.io.Serializable;
+<#assign hasImportDate=0 />
+<#list properties as pro>
+<#if pro.proType == "Date" && hasImportDate == 0>
+import java.util.Date;
+<#assign hasImportDate=1 />
+</#if>
+</#list>
+
 <#if classNameWithoutEntity == "User">
 import com.myframework.entity.BaseUserEntity;
 <#else>

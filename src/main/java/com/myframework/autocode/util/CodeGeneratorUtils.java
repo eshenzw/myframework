@@ -19,12 +19,14 @@ import com.myframework.autocode.entity.TableInfo;
 
 public class CodeGeneratorUtils
 {
-
+	public final static String DAO_TYPE = "2";  //1:原生javaDao  2:接口型dao，mybatis实例化
+	public final static String DB_TYPE = "1";  //1:mysql  2:oracle
 	public final static String DB_DEFINE_FILE = "\\doc\\数据表设计.xlsx";
 	public final static String AUTOCODE_PATH = "../template";
 	public final static String OUTPUT_PATH = "/doc/AutoCodeGenerate/";
 	public final static String OUTPUT_PACKAGE = "com.parttime.app";
 	public final static String DB_PREFIX = "pt_";
+
 
 	/**
 	 * 读取xlsx配置文件用

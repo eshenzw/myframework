@@ -95,54 +95,96 @@ public class GeneratorTest
 			writer.close();
 			System.out.println("导出成功：" + pathFile.getAbsolutePath());
 
-			// Mapper生成
-			pathFile = new File(basePath + tableInfo.getModuleName() +"/mapper/" + classInfo.getClassNameWithoutEntity() + "Mapper.xml");
-			pathFile.getParentFile().mkdirs();
-			fos = new FileOutputStream(pathFile);
-			writer = new OutputStreamWriter(fos, "UTF-8");
-			t = cfg.getTemplate("MapperGeneratorTemplate");
-			t.process(dataMap, writer);
-			fos.flush();
-			fos.close();
-			writer.close();
-			System.out.println("导出成功：" + pathFile.getAbsolutePath());
+			if(CodeGeneratorUtils.DAO_TYPE == "1"){
 
-			// OracleMapper生成
-			pathFile = new File(basePath + tableInfo.getModuleName() +"/mapper/oracle/" + classInfo.getClassNameWithoutEntity() + "Mapper.xml");
-			pathFile.getParentFile().mkdirs();
-			fos = new FileOutputStream(pathFile);
-			writer = new OutputStreamWriter(fos, "UTF-8");
-			t = cfg.getTemplate("MapperOracleGeneratorTemplate");
-			t.process(dataMap, writer);
-			fos.flush();
-			fos.close();
-			writer.close();
-			System.out.println("导出成功：" + pathFile.getAbsolutePath());
+				if(CodeGeneratorUtils.DB_TYPE == "1"){
+					// Mapper生成
+					pathFile = new File(basePath + tableInfo.getModuleName() +"/mapper/" + classInfo.getClassNameWithoutEntity() + "Mapper.xml");
+					pathFile.getParentFile().mkdirs();
+					fos = new FileOutputStream(pathFile);
+					writer = new OutputStreamWriter(fos, "UTF-8");
+					t = cfg.getTemplate("MapperGeneratorTemplate");
+					t.process(dataMap, writer);
+					fos.flush();
+					fos.close();
+					writer.close();
+					System.out.println("导出成功：" + pathFile.getAbsolutePath());
+				}else if(CodeGeneratorUtils.DB_TYPE == "2"){
+					// OracleMapper生成
+					pathFile = new File(basePath + tableInfo.getModuleName() +"/mapper/oracle/" + classInfo.getClassNameWithoutEntity() + "Mapper.xml");
+					pathFile.getParentFile().mkdirs();
+					fos = new FileOutputStream(pathFile);
+					writer = new OutputStreamWriter(fos, "UTF-8");
+					t = cfg.getTemplate("MapperOracleGeneratorTemplate");
+					t.process(dataMap, writer);
+					fos.flush();
+					fos.close();
+					writer.close();
+					System.out.println("导出成功：" + pathFile.getAbsolutePath());
+				}
 
-			// IDao生成
-			pathFile = new File(basePath + tableInfo.getModuleName() +"/dao/" + classInfo.getIDaoName() + ".java");
-			pathFile.getParentFile().mkdirs();
-			fos = new FileOutputStream(pathFile);
-			writer = new OutputStreamWriter(fos, "UTF-8");
-			t = cfg.getTemplate("IDaoGeneratorTemplate");
-			t.process(dataMap, writer);
-			fos.flush();
-			fos.close();
-			writer.close();
-			System.out.println("导出成功：" + pathFile.getAbsolutePath());
+				// IDao生成
+				pathFile = new File(basePath + tableInfo.getModuleName() +"/dao/" + classInfo.getIDaoName() + ".java");
+				pathFile.getParentFile().mkdirs();
+				fos = new FileOutputStream(pathFile);
+				writer = new OutputStreamWriter(fos, "UTF-8");
+				t = cfg.getTemplate("IDaoGeneratorTemplate");
+				t.process(dataMap, writer);
+				fos.flush();
+				fos.close();
+				writer.close();
+				System.out.println("导出成功：" + pathFile.getAbsolutePath());
 
-			// Dao生成
-			pathFile = new File(basePath + tableInfo.getModuleName() +"/dao/" + classInfo.getDaoName() + "Impl.java");
-			pathFile.getParentFile().mkdirs();
-			fos = new FileOutputStream(pathFile);
-			writer = new OutputStreamWriter(fos, "UTF-8");
-			t = cfg.getTemplate("DaoGeneratorTemplate");
-			t.process(dataMap, writer);
-			fos.flush();
-			fos.close();
-			writer.close();
-			System.out.println("导出成功：" + pathFile.getAbsolutePath());
-
+				// Dao生成
+				pathFile = new File(basePath + tableInfo.getModuleName() +"/dao/" + classInfo.getDaoName() + "Impl.java");
+				pathFile.getParentFile().mkdirs();
+				fos = new FileOutputStream(pathFile);
+				writer = new OutputStreamWriter(fos, "UTF-8");
+				t = cfg.getTemplate("DaoGeneratorTemplate");
+				t.process(dataMap, writer);
+				fos.flush();
+				fos.close();
+				writer.close();
+				System.out.println("导出成功：" + pathFile.getAbsolutePath());
+			}else if(CodeGeneratorUtils.DAO_TYPE == "2"){
+				//
+				if(CodeGeneratorUtils.DB_TYPE == "1"){
+					// Mapper生成
+					pathFile = new File(basePath + tableInfo.getModuleName() +"/mapper/" + classInfo.getClassNameWithoutEntity() + "Mapper.xml");
+					pathFile.getParentFile().mkdirs();
+					fos = new FileOutputStream(pathFile);
+					writer = new OutputStreamWriter(fos, "UTF-8");
+					t = cfg.getTemplate("MapperGeneratorTemplate2");
+					t.process(dataMap, writer);
+					fos.flush();
+					fos.close();
+					writer.close();
+					System.out.println("导出成功：" + pathFile.getAbsolutePath());
+				}else if(CodeGeneratorUtils.DB_TYPE == "2"){
+					// OracleMapper生成
+					pathFile = new File(basePath + tableInfo.getModuleName() +"/mapper/oracle/" + classInfo.getClassNameWithoutEntity() + "Mapper.xml");
+					pathFile.getParentFile().mkdirs();
+					fos = new FileOutputStream(pathFile);
+					writer = new OutputStreamWriter(fos, "UTF-8");
+					t = cfg.getTemplate("MapperOracleGeneratorTemplate2");
+					t.process(dataMap, writer);
+					fos.flush();
+					fos.close();
+					writer.close();
+					System.out.println("导出成功：" + pathFile.getAbsolutePath());
+				}
+				// IDao生成
+				pathFile = new File(basePath + tableInfo.getModuleName() +"/dao/" + classInfo.getIDaoName() + ".java");
+				pathFile.getParentFile().mkdirs();
+				fos = new FileOutputStream(pathFile);
+				writer = new OutputStreamWriter(fos, "UTF-8");
+				t = cfg.getTemplate("IDaoGeneratorTemplate2");
+				t.process(dataMap, writer);
+				fos.flush();
+				fos.close();
+				writer.close();
+				System.out.println("导出成功：" + pathFile.getAbsolutePath());
+			}
 		}
 	}
 
