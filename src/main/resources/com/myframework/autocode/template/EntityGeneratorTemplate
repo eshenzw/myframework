@@ -1,11 +1,17 @@
 package ${classPackage}.entity;
 
 import java.io.Serializable;
+<#assign basePros = ["id","status","createId","createTime","updateId","updateTime"]>
 <#assign hasImportDate=0 />
+<#assign hasImportBigDecimal=0 />
 <#list properties as pro>
-<#if pro.proType == "Date" && hasImportDate == 0>
+<#if !(basePros?seq_contains(pro.proName)) && pro.proType == "Date" && hasImportDate == 0>
 import java.util.Date;
 <#assign hasImportDate=1 />
+</#if>
+<#if !(basePros?seq_contains(pro.proName)) && pro.proType == "BigDecimal" && hasImportDate == 0>
+import java.math.BigDecimal;
+<#assign hasImportBigDecimal=1 />
 </#if>
 </#list>
 
@@ -24,7 +30,6 @@ public class ${className} extends BaseUserEntity {
 public class ${className} extends BaseEntity {
 </#if>
 
-<#assign basePros = ["id","status","createId","createTime","updateId","updateTime"]>
 <#list properties as pro>
 <#if !(basePros?seq_contains(pro.proName))>
     /*

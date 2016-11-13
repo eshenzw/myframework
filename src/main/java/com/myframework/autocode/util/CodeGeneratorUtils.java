@@ -36,7 +36,7 @@ public class CodeGeneratorUtils
 	public final static String DB_DEFINE_FILE = "\\doc\\报表数据表设计.xlsx";
 	public final static String AUTOCODE_PATH = "../template";
 	public final static String OUTPUT_PATH = "/doc/AutoCodeGenerate/";
-	public final static String OUTPUT_PACKAGE = "com.zw.report";
+	public final static String OUTPUT_PACKAGE = "com.zw";
 	public final static String DB_PREFIX = "";
 
 
