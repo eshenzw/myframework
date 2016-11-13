@@ -88,13 +88,17 @@ public class PropertyInfo
 		{
 			propertyType = "int";
 		}
-		else if (columnType.toLowerCase().contains("int"))
-		{
-			propertyType = "int";
-		}
 		else if (columnType.toLowerCase().contains("bigint"))
 		{
 			propertyType = "Long";
+		}
+		else if (columnType.toLowerCase().contains("int"))
+		{
+			if(length<=11){
+				propertyType = "int";
+			}else{
+				propertyType = "Long";
+			}
 		}
 		else if (columnType.toLowerCase().contains("float"))
 		{
@@ -120,11 +124,11 @@ public class PropertyInfo
 		{
 			propertyType = "Date";
 		}
-		else if (columnType.toLowerCase().contains("time"))
+		else if (columnType.toLowerCase().contains("timestamp"))
 		{
 			propertyType = "Date";
 		}
-		else if (columnType.toLowerCase().contains("timestamp"))
+		else if (columnType.toLowerCase().contains("time"))
 		{
 			propertyType = "Date";
 		}
