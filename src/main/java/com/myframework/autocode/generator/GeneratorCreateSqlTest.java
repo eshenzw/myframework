@@ -1,5 +1,11 @@
 package com.myframework.autocode.generator;
 
+import com.myframework.autocode.entity.ColumnInfo;
+import com.myframework.autocode.entity.TableInfo;
+import com.myframework.autocode.util.CodeGeneratorUtils;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -9,14 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.myframework.autocode.entity.ColumnInfo;
-import com.myframework.autocode.entity.TableInfo;
-import com.myframework.autocode.util.CodeGeneratorUtils;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-
-public class GeneratorStoredProcedureTest
+public class GeneratorCreateSqlTest
 {
 
 	public static void main(String[] args) throws Exception
@@ -26,7 +25,7 @@ public class GeneratorStoredProcedureTest
 		List<TableInfo> tableInfoList = CodeGeneratorUtils.readXlsx(xlsxFile);
 
 		Configuration cfg = new Configuration();
-		cfg.setClassForTemplateLoading(GeneratorStoredProcedureTest.class, CodeGeneratorUtils.AUTOCODE_PATH);
+		cfg.setClassForTemplateLoading(GeneratorCreateSqlTest.class, CodeGeneratorUtils.AUTOCODE_PATH);
 
 		String basePath = System.getProperty("user.dir") + CodeGeneratorUtils.OUTPUT_PATH;
 
@@ -46,6 +45,7 @@ public class GeneratorStoredProcedureTest
 			{
 				Map<String, Object> columnMap = new HashMap<String, Object>();
 				columnMap.put("columnName", columnInfo.getName());
+				columnMap.put("columnType", columnInfo.getDbColumnType(CodeGeneratorUtils.DB_TYPE));
 				columnMap.put("description", columnInfo.getDescription());
 				columnMap.put("example", columnInfo.getExample());
 				columnPros.add(columnMap);
@@ -56,11 +56,11 @@ public class GeneratorStoredProcedureTest
 		}
 		dataMap.put("properties", pros);
 
-		File pathFile = new File(basePath + "StoredProcedure.txt");
+		File pathFile = new File(basePath + "CreateSql.sql");
 		pathFile.getParentFile().mkdirs();
 		FileOutputStream fos = new FileOutputStream(pathFile);
 		Writer writer = new OutputStreamWriter(fos, "UTF-8");
-		Template t = cfg.getTemplate("StoredProcedureGeneratorTemplate");
+		Template t = cfg.getTemplate("CreateSqlGeneratorTemplate");
 		t.process(dataMap, writer);
 		fos.flush();
 		fos.close();

@@ -73,8 +73,8 @@ public class GeneratorTest
 				proMap.put("proDescription", columnInfo.getDescription());
 				proMap.put("proColumnName", columnInfo.getName());
 				proMap.put("proColumnNameLc", columnInfo.getName().toLowerCase());
-				proMap.put("proDbColumnType", columnInfo.getDbColumnType("sqlserver"));
-				proMap.put("proDbColumnOracleType", columnInfo.getDbColumnType("oracle"));
+				proMap.put("proDbColumnType", columnInfo.getDbColumnType(CodeGeneratorUtils.DB_TYPE.MYSQL));
+				proMap.put("proDbColumnOracleType", columnInfo.getDbColumnType(CodeGeneratorUtils.DB_TYPE.ORACLE));
 				proMap.put("proNotNull", columnInfo.isNotNull());
 				proMap.put("proType", propertyInfo.getPropertyType());
 				proMap.put("proName", propertyInfo.getPropertyName());
@@ -97,7 +97,7 @@ public class GeneratorTest
 
 			if(CodeGeneratorUtils.DAO_TYPE == "1"){
 
-				if(CodeGeneratorUtils.DB_TYPE == "1"){
+				if(CodeGeneratorUtils.DB_TYPE == CodeGeneratorUtils.DB_TYPE_ENUM.MYSQL){
 					// Mapper生成
 					pathFile = new File(basePath + tableInfo.getModuleName() +"/mapper/" + classInfo.getClassNameWithoutEntity() + "Mapper.xml");
 					pathFile.getParentFile().mkdirs();
@@ -109,7 +109,7 @@ public class GeneratorTest
 					fos.close();
 					writer.close();
 					System.out.println("导出成功：" + pathFile.getAbsolutePath());
-				}else if(CodeGeneratorUtils.DB_TYPE == "2"){
+				}else if(CodeGeneratorUtils.DB_TYPE == CodeGeneratorUtils.DB_TYPE_ENUM.ORACLE){
 					// OracleMapper生成
 					pathFile = new File(basePath + tableInfo.getModuleName() +"/mapper/oracle/" + classInfo.getClassNameWithoutEntity() + "Mapper.xml");
 					pathFile.getParentFile().mkdirs();
@@ -148,7 +148,7 @@ public class GeneratorTest
 				System.out.println("导出成功：" + pathFile.getAbsolutePath());
 			}else if(CodeGeneratorUtils.DAO_TYPE == "2"){
 				//
-				if(CodeGeneratorUtils.DB_TYPE == "1"){
+				if(CodeGeneratorUtils.DB_TYPE == CodeGeneratorUtils.DB_TYPE_ENUM.MYSQL){
 					// Mapper生成
 					pathFile = new File(basePath + tableInfo.getModuleName() +"/mapper/" + classInfo.getClassNameWithoutEntity() + "Mapper.xml");
 					pathFile.getParentFile().mkdirs();
@@ -160,7 +160,7 @@ public class GeneratorTest
 					fos.close();
 					writer.close();
 					System.out.println("导出成功：" + pathFile.getAbsolutePath());
-				}else if(CodeGeneratorUtils.DB_TYPE == "2"){
+				}else if(CodeGeneratorUtils.DB_TYPE == CodeGeneratorUtils.DB_TYPE_ENUM.ORACLE){
 					// OracleMapper生成
 					pathFile = new File(basePath + tableInfo.getModuleName() +"/mapper/oracle/" + classInfo.getClassNameWithoutEntity() + "Mapper.xml");
 					pathFile.getParentFile().mkdirs();
