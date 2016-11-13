@@ -64,7 +64,7 @@ public class ColumnInfo
 			{
 				String dbTypeName = matcher.group(1);
 				String dbTypeLength = matcher.group(3);
-				colType = dbTypeName;
+				colType = dbTypeName.toUpperCase();
 				if((dbTypeLength == null || "".equals(dbTypeLength.trim())) && this.getLength() > 0){
 					dbTypeLength = String.valueOf(this.getLength());
 				}

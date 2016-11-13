@@ -36,8 +36,8 @@ public class GeneratorCreateSqlTest
 			Map<String, Object> proMap = new HashMap<String, Object>();
 			proMap.put("tableName", tableInfo.getTableName());
 			proMap.put("tableDbName", tableInfo.getTableDbName());
-			dataMap.put("tableDbNameLc", tableInfo.getTableDbName().toLowerCase());
-			dataMap.put("prefixTableDbName", CodeGeneratorUtils.DB_PREFIX + tableInfo.getTableDbName());
+			proMap.put("tableDbNameLc", tableInfo.getTableDbName().toLowerCase());
+			proMap.put("prefixTableDbName", CodeGeneratorUtils.DB_PREFIX + tableInfo.getTableDbName());
 
 			List<Map<String, Object>> columnPros = new ArrayList<Map<String, Object>>();
 			List<ColumnInfo> columnInfoList = tableInfo.getColumns();
