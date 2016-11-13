@@ -20,8 +20,8 @@
     </sql>
     <sql id="${classNameWithoutEntity}_Where_Clause" >
 <#list properties as pro>
-        <if test="q_${pro.proName} != null" >
-            and ${pro.proColumnName}=${r'#{q_'}${pro.proName}}
+        <if test="${pro.proName} != null" >
+            and ${pro.proColumnName}=${r'#{'}${pro.proName}}
         </if>
 </#list>
     </sql>
