@@ -1,5 +1,7 @@
 package com.myframework.autocode.entity;
 
+import com.myframework.autocode.util.CodeGeneratorUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,10 +54,24 @@ public class ColumnInfo
 		return "ColumnInfo [name=" + name + ", type=" + type + ", description=" + description + "]";
 	}
 
-	public String getDbColumnType(String database)
+	public String getDbColumnType(CodeGeneratorUtils.DB_TYPE_ENUM dbtype)
 	{
-		String dbType = "";
-		if ("sqlserver".equalsIgnoreCase(database))
+		String colType = "";
+		if (dbtype == CodeGeneratorUtils.DB_TYPE_ENUM.MYSQL)
+		{
+			Matcher matcher = pattern.matcher(this.type);
+			if (matcher.matches())
+			{
+				String dbTypeName = matcher.group(1);
+				String dbTypeLength = matcher.group(3);
+				colType = dbTypeName.toUpperCase();
+				if((dbTypeLength == null || "".equals(dbTypeLength.trim())) && this.getLength() > 0){
+					dbTypeLength = String.valueOf(this.getLength());
+				}
+				colType += dbTypeLength == null ? "" : ("(" + dbTypeLength + ")");
+			}
+		}
+		else if (dbtype == CodeGeneratorUtils.DB_TYPE_ENUM.SQLSERVER)
 		{
 			Matcher matcher = pattern.matcher(this.type);
 			if (matcher.matches())
@@ -64,20 +80,23 @@ public class ColumnInfo
 				String dbTypeLength = matcher.group(3);
 				if ("VARCHAR2".equalsIgnoreCase(dbTypeName) || "VARCHAR".equalsIgnoreCase(dbTypeName))
 				{
-					dbType = "VARCHAR";
+					colType = "VARCHAR";
 				}
 				else if ("NUMBER".equalsIgnoreCase(dbTypeName))
 				{
-					dbType = "NUMERIC";
+					colType = "NUMERIC";
 				}
 				else if ("CHAR".equalsIgnoreCase(dbTypeName))
 				{
-					dbType = "CHAR";
+					colType = "CHAR";
 				}
-				dbType += dbTypeLength == null ? "" : ("(" + dbTypeLength + ")");
+				if((dbTypeLength == null || "".equals(dbTypeLength.trim())) && this.getLength() > 0){
+					dbTypeLength = String.valueOf(this.getLength());
+				}
+				colType += dbTypeLength == null ? "" : ("(" + dbTypeLength + ")");
 			}
 		}
-		else if ("oracle".equalsIgnoreCase(database))
+		else if (dbtype == CodeGeneratorUtils.DB_TYPE_ENUM.ORACLE)
 		{
 			Matcher matcher = pattern.matcher(this.type);
 			if (matcher.matches())
@@ -86,20 +105,23 @@ public class ColumnInfo
 				String dbTypeLength = matcher.group(3);
 				if ("VARCHAR2".equalsIgnoreCase(dbTypeName) || "VARCHAR".equalsIgnoreCase(dbTypeName))
 				{
-					dbType = "VARCHAR2";
+					colType = "VARCHAR2";
 				}
 				else if ("NUMBER".equalsIgnoreCase(dbTypeName))
 				{
-					dbType = "NUMBER";
+					colType = "NUMBER";
 				}
 				else if ("CHAR".equalsIgnoreCase(dbTypeName))
 				{
-					dbType = "CHAR";
+					colType = "CHAR";
 				}
-				dbType += dbTypeLength == null ? "" : ("(" + dbTypeLength + ")");
+				if((dbTypeLength == null || "".equals(dbTypeLength.trim())) && this.getLength() > 0){
+					dbTypeLength = String.valueOf(this.getLength());
+				}
+				colType += dbTypeLength == null ? "" : ("(" + dbTypeLength + ")");
 			}
 		}
-		return dbType;
+		return colType;
 	}
 
 	public String getName()
