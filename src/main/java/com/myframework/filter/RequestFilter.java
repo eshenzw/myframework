@@ -1,26 +1,27 @@
 package com.myframework.filter;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Request Filter 作用是将request,response设置到ThreadLocal中。
  * 同一个request请求处理线程可以通过getRequestLocal(),getResponseLocal()
  * 获得当前的request和response值。
- * 
- * @author <a href="mailto:fanwenqiang@nj.fiberhome.com.cn">AndyFan*</a>
+ *
+ * @author zhaowei
  */
 public class RequestFilter implements Filter
 {
+	public final static String CONTEXT_PATH = "contextPath";
+	public final static String BASE_PATH = "basePath";
 	/***/
 	private static transient Log log = LogFactory.getLog(RequestFilter.class);
 	/***/
@@ -39,6 +40,10 @@ public class RequestFilter implements Filter
 			{
 				log.debug("enter RequestFilter doFilter");
 			}
+			String path = request.getServletContext().getContextPath();
+			String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+			request.setAttribute(CONTEXT_PATH,path);
+			request.setAttribute(BASE_PATH,basePath);
 			requestLocal.set((HttpServletRequest) request);
 			responseLocal.set((HttpServletResponse) response);
 			filterChain.doFilter(request, response);
@@ -73,7 +78,7 @@ public class RequestFilter implements Filter
 
 	/**
 	 * 获取当前线程的request
-	 * 
+	 *
 	 * @return the requestLocal
 	 */
 	public static HttpServletRequest getRequest()
@@ -88,7 +93,7 @@ public class RequestFilter implements Filter
 
 	/**
 	 * 获取当前线程的reponse
-	 * 
+	 *
 	 * @return the responseLocal
 	 */
 	public static HttpServletResponse getResponse()
