@@ -20,6 +20,7 @@ import java.util.Map.Entry;
  */
 public class RequestFilter implements Filter
 {
+	public final static String HOST_URL = "hostUrl";
 	public final static String CONTEXT_PATH = "contextPath";
 	public final static String BASE_PATH = "basePath";
 	/***/
@@ -41,7 +42,9 @@ public class RequestFilter implements Filter
 				log.debug("enter RequestFilter doFilter");
 			}
 			String path = request.getServletContext().getContextPath();
-			String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+			String host = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+			String basePath = host + path;
+			request.setAttribute(HOST_URL,host);
 			request.setAttribute(CONTEXT_PATH,path);
 			request.setAttribute(BASE_PATH,basePath);
 			requestLocal.set((HttpServletRequest) request);
