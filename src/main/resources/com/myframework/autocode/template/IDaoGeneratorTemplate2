@@ -1,12 +1,15 @@
 package ${classPackage}.dao;
 
+import java.util.List;
+import java.util.Map;
 import ${classPackage}.entity.${className};
 
 /**
  * Created by MyFrameWork.AutoCode on ${.now?date}
+ * bean created by mybatis
  */
-public interface ${iDaoName}  {
-/**
+public interface ${iDaoName} {
+    /**
      * 根据参数获取对象列表
      *
      * @param params
@@ -15,7 +18,7 @@ public interface ${iDaoName}  {
     public List<${className}> query${classNameWithoutEntity}List(Map<String, Object> params);
 
     /**
-     * 根据参数获取对象列表结果
+     * 根据参数获取对象列表结果总数
      *
      * @param params
      * @return
@@ -36,7 +39,7 @@ public interface ${iDaoName}  {
      * @param t
      * @return 插入结果（数量）
      */
-    public int add${classNameWithoutEntity}(${className} t);
+    public int add${classNameWithoutEntity}(${className} ${classObjectName});
 
     /**
      * 根据对象有选择性的只插入*字段不为空*到db
@@ -44,7 +47,7 @@ public interface ${iDaoName}  {
      * @param t  对象
      * @return 插入结果（数量）
      */
-    public int add${classNameWithoutEntity}Selective(${className} t);
+    public int add${classNameWithoutEntity}Selective(${className} ${classObjectName});
 
     /**
      * 根据主键ID查询并*更新所有字段*到db
@@ -52,7 +55,7 @@ public interface ${iDaoName}  {
      * @param t
      * @return 更新结果（数量）
      */
-    public int update${classNameWithoutEntity}(${className} t);
+    public int update${classNameWithoutEntity}(${className} ${classObjectName});
 
     /**
      * 根据主键ID查询并有选择性的只更新*字段不为空*到db
@@ -60,7 +63,7 @@ public interface ${iDaoName}  {
      * @param t
      * @return 更新结果（数量）
      */
-    public int update${classNameWithoutEntity}Selective(${className} t);
+    public int update${classNameWithoutEntity}Selective(${className} ${classObjectName});
 
     /**
      * 根据主键ID查询并删除对象
@@ -86,7 +89,7 @@ public interface ${iDaoName}  {
      * @return 插入结果（数量）
      * @deprecated 已经被删除的方法
      */
-    public List<${className}> batchAdd${classNameWithoutEntity}(List<${className}> list);
+    public int batchAdd${classNameWithoutEntity}(List<${className}> list);
 
     /**
      * 根据对象批量更新*所有字段*到db
