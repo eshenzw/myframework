@@ -435,20 +435,44 @@
   </dependencies>
   <repositories>
     <repository>
+      <id>offical</id>
+      <name>Maven Official Repository</name>
+      <url>http://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
       <id>nexus</id>
       <name>Nexus</name>
-      <url>http://sunbiyun.com:8081/nexus/content/groups/public/</url>
+      <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>true</enabled></snapshots>
     </repository>
   </repositories>
+  <repository>
+    <id>ss2</id>
+    <name>SpringSide ss2 Additional Repository</name>
+    <url>http://mirrors.ibiblio.org/maven2/</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </repository>
   <pluginRepositories>
     <pluginRepository>
-      <id>nexus</id>
-      <name>Nexus</name>
-      <url>http://sunbiyun.com:8081/nexus/content/groups/public/</url>
+      <id>offical</id>
+      <name>Maven Official Repository</name>
+      <url>http://repo1.maven.org/maven2/</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>true</enabled></snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>ss2</id>
+      <name>SpringSide ss2 Additional Repository</name>
+      <url>http://mirrors.ibiblio.org/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </pluginRepository>
   </pluginRepositories>
   <build>
