@@ -449,15 +449,15 @@
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>true</enabled></snapshots>
     </repository>
+    <repository>
+      <id>ss2</id>
+      <name>SpringSide ss2 Additional Repository</name>
+      <url>http://mirrors.ibiblio.org/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
   </repositories>
-  <repository>
-    <id>ss2</id>
-    <name>SpringSide ss2 Additional Repository</name>
-    <url>http://mirrors.ibiblio.org/maven2/</url>
-    <snapshots>
-      <enabled>false</enabled>
-    </snapshots>
-  </repository>
   <pluginRepositories>
     <pluginRepository>
       <id>offical</id>
