@@ -2,6 +2,12 @@ package com.myframework.annotation;
 
 import java.lang.annotation.*;
 
+/**
+ * 模块注解
+ *
+ * @author zhaowei
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)  
 @Target({ElementType.METHOD}) 
 @Inherited  
