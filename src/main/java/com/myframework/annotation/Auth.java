@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 安全注释
  * 
- * @author fengjun
+ * @author zhaowei
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
