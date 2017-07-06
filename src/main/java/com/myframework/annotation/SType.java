@@ -3,7 +3,7 @@ package com.myframework.annotation;
 /**
  * Service类型
  * 
- * @author AndyFan*
+ * @author zhaowei*
  */
 public enum SType
 {

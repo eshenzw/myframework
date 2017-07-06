@@ -94,6 +94,7 @@ public class RespUtil {
     public static void responseJsonp(String content)
     {
         HttpServletRequest request = RequestFilter.getRequest();
+        RequestFilter.getResponse().setHeader("P3P", "CP=CAO PSA OUR");
         String callback = request.getParameter("callback");
         if(!StringUtil.isEmpty(callback)){
             response(callback + "(" + content + ")", CONTENT_TYPE_JSONP);

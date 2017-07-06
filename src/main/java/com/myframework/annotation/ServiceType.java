@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 /**
  * 服务类型
  * 
- * @author AndyFan*
+ * @author zhaowei*
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
