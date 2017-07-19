@@ -63,4 +63,20 @@ public class DataSourceHolder {
     public static void setTransaction(Boolean flag) {
         transactionLocal.set(flag);
     }
+
+    public static void removeDbKey() {
+        dbKeyLocal.remove();
+    }
+
+    public static void removeMaster() {
+        isMasteLocal.remove();
+    }
+
+    public static void removeForceClose() {
+        isForceCloseLocal.remove();
+    }
+
+    public static void removeTransaction() {
+        transactionLocal.remove();
+    }
 }
