@@ -43,3 +43,4 @@ public class AnnotationInterceptor implements MethodInterceptor {
             }
         }
     }
+}

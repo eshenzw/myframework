@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSession;
  * Created by zw
  */
 public class DataSourceHolder {
-    private static final String SESSION_DB_KEY = "SESSION_DB_KEY";
+    public static final String SESSION_DB_KEY = "SESSION_DB_KEY";
     private static final ThreadLocal<String> dbKeyLocal = new ThreadLocal<String>();
     private static final ThreadLocal<Boolean> isMasteLocal = new ThreadLocal<Boolean>();
     private static final ThreadLocal<Boolean> isForceCloseLocal = new ThreadLocal<Boolean>();
