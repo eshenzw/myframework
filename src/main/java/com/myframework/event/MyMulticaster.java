@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
 
-import com.myframework.db.DynamicDataSource;
-import com.myframework.filter.RequestFilter;
+import com.myframework.core.db.DynamicDataSource;
+import com.myframework.core.filter.RequestFilter;
 import com.myframework.util.SpringContextUtil;
 
 /***

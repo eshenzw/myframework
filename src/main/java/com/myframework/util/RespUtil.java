@@ -14,7 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.myframework.filter.RequestFilter;
+import com.myframework.core.filter.RequestFilter;
 
 /**
  * Created by zw on 2016/8/19.

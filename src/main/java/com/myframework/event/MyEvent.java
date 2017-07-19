@@ -2,8 +2,8 @@ package com.myframework.event;
 
 import java.io.Serializable;
 
-import com.myframework.db.DynamicDataSource;
-import com.myframework.filter.RequestFilter;
+import com.myframework.core.db.DynamicDataSource;
+import com.myframework.core.filter.RequestFilter;
 
 /***
  * 事件消息体

@@ -13,7 +13,7 @@ import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.serializer.ValueFilter;
 import com.myframework.constant.Constants;
-import com.myframework.entity.KeyValueEntity;
+import com.myframework.core.entity.KeyValueEntity;
 
 /**
  * @DateTime: 2011-3-4

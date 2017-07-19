@@ -11,7 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.myframework.esb.kafka.KafkaMessageCenter;
 import com.myframework.esb.system.SystemMessageCenter;
 import com.myframework.esb.vo.SwapVO;
-import com.myframework.filter.RequestFilter;
+import com.myframework.core.filter.RequestFilter;
 import com.myframework.util.SpringContextUtil;
 import com.myframework.util.StringUtil;
 

@@ -1,6 +1,6 @@
 package com.myframework.extend.tree;
 
-import com.myframework.entity.IdEntity;
+import com.myframework.core.entity.IdEntity;
 
 /**
  * treeTable 实体Bean继承接口
