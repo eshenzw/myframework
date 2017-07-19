@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Created by zw
@@ -25,5 +27,11 @@ public class DynamicDataSource extends DelegatingDataSource {
         logger.debug("DynamicDataSource getTargetDataSource：" + ds.toString());
 
         return ds;
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+        Connection conn = MutiDataSourceRouter.getCurrentDataSource().getConnection();
+        return ConnectionWapper.getInstance(conn);
     }
 }

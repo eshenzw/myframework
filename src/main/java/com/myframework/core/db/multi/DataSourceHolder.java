@@ -12,6 +12,8 @@ public class DataSourceHolder {
     private static final String SESSION_DB_KEY = "SESSION_DB_KEY";
     private static final ThreadLocal<String> dbKeyLocal = new ThreadLocal<String>();
     private static final ThreadLocal<Boolean> isMasteLocal = new ThreadLocal<Boolean>();
+    private static final ThreadLocal<Boolean> isForceCloseLocal = new ThreadLocal<Boolean>();
+    private static final ThreadLocal<Boolean> transactionLocal = new ThreadLocal<Boolean>();
 
     public static String getDbKey() {
         String dbKey = null;
@@ -36,5 +38,29 @@ public class DataSourceHolder {
             return isMasteLocal.get();
         }
         return true;
+    }
+
+    public static Boolean isForceClose() {
+        return isForceCloseLocal.get() == null ? false : isForceCloseLocal.get();
+    }
+
+    public static Boolean isTransaction() {
+        return transactionLocal.get() == null ? false : transactionLocal.get();
+    }
+
+    public static void setDbKey(String dbKey) {
+        dbKeyLocal.set(dbKey);
+    }
+
+    public static void setMaster(Boolean flag) {
+        isMasteLocal.set(flag);
+    }
+
+    public static void setForceClose(Boolean flag) {
+        isForceCloseLocal.set(flag);
+    }
+
+    public static void setTransaction(Boolean flag) {
+        transactionLocal.set(flag);
     }
 }
