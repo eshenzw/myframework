@@ -12,6 +12,7 @@
     <spring.version>4.0.2.RELEASE</spring.version>
     <!-- mybatis版本号 -->
     <mybatis.version>3.2.6</mybatis.version>
+    <druid-version>1.0.28</druid-version>
     <!-- 日志文件管理包版本 -->
     <slf4j.version>1.7.12</slf4j.version>
     <logback.version>1.0.9</logback.version>
@@ -335,6 +336,11 @@
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <version>1.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid</artifactId>
+      <version>${druid-version}</version>
     </dependency>
     <!-- JSTL标签类 -->
     <dependency>
