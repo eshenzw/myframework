@@ -31,7 +31,13 @@ public class DynamicDataSource extends DelegatingDataSource {
 
     @Override
     public Connection getConnection() throws SQLException {
-        Connection conn = MutiDataSourceRouter.getCurrentDataSource().getConnection();
+        Connection conn = getTargetDataSource().getConnection();
+        return ConnectionWapper.getInstance(conn);
+    }
+
+    @Override
+    public Connection getConnection(String username, String password) throws SQLException {
+        Connection conn = getTargetDataSource().getConnection(username, password);
         return ConnectionWapper.getInstance(conn);
     }
 }
