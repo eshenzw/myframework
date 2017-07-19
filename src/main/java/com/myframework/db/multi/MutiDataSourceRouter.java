@@ -1,17 +1,24 @@
 package com.myframework.db.multi;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by zw
  */
 public class MutiDataSourceRouter {
 
+    private static Logger logger = LoggerFactory.getLogger(MutiDataSourceRouter.class);
 
-    private static Map<String, List<DataSource>> mutiDatasourceMap = new HashMap<String, List<DataSource>>();
+    private static Map<String, List<DataSource>> mutiDatasourceMap = new ConcurrentHashMap<String, List<DataSource>>();
 
     public static DataSource getCurrentDataSource() {
         List<DataSource> targetDataSources = getAllDataSources(DataSourceHolder.getDbKey());
@@ -35,10 +42,28 @@ public class MutiDataSourceRouter {
             List<DataSource> dss = DataSourceFactory.initMasterDataSource();
             mutiDatasourceMap.put(DataSourceFactory.MASTER_DB_KEY, dss);
         }
+        if (!mutiDatasourceMap.containsKey(dbKey)) {
+            //初始化其他db连接
+            List<DataSource> dss = DataSourceFactory.createDataSourceByKey(dbKey);
+            mutiDatasourceMap.put(dbKey, dss);
+        }
         return mutiDatasourceMap.get(dbKey);
     }
 
     public static List<DataSource> removeDataSourcesByKey(String dbKey) {
+        List<DataSource> dss = mutiDatasourceMap.get(dbKey);
+        for (DataSource ds : dss) {
+            if (ds instanceof DruidDataSource) {
+                ((DruidDataSource) ds).close();
+            } else {
+                try {
+                    ds.getConnection().close();
+                } catch (SQLException e) {
+                    logger.debug("清除数据源失败！", e);
+                    e.printStackTrace();
+                }
+            }
+        }
         return mutiDatasourceMap.remove(dbKey);
     }
 }
