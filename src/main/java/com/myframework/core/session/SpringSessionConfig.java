@@ -1,5 +1,6 @@
 package com.myframework.core.session;
 
+import com.myframework.util.StringUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
@@ -17,11 +18,14 @@ public class SpringSessionConfig {
     public final static String SESSION_REDIS_PORT = "session.redis.port";
 
     @Bean
-    public JedisConnectionFactory connectionFactory()
-    {
-        JedisConnectionFactory connection = new JedisConnectionFactory();
-        connection.setPort(Integer.valueOf(PropertiesUtil.getInstance(Constants.SYSTEM_FILE_PATH).getValue(SESSION_REDIS_PORT)));
-        connection.setHostName(PropertiesUtil.getInstance(Constants.SYSTEM_FILE_PATH).getValue(SESSION_REDIS_HOST));
-        return connection;
+    public JedisConnectionFactory connectionFactory() {
+        if (StringUtil.toBoolean(PropertiesUtil.getInstance(Constants.SYSTEM_FILE_PATH).getValue(SpringSessionConfig.SESSION_REDIS_ENABLE))) {
+            JedisConnectionFactory connection = new JedisConnectionFactory();
+            connection.setPort(Integer.valueOf(PropertiesUtil.getInstance(Constants.SYSTEM_FILE_PATH).getValue(SESSION_REDIS_PORT)));
+            connection.setHostName(PropertiesUtil.getInstance(Constants.SYSTEM_FILE_PATH).getValue(SESSION_REDIS_HOST));
+            return connection;
+        } else {
+            return null;
+        }
     }
 }
