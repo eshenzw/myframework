@@ -10,4 +10,6 @@
     <aop:aspectj-autoproxy proxy-target-class="true"/>
     <aop:config proxy-target-class="true"/>
 
+    <bean id="sessionInitializer" class="com.myframework.core.session.SessionInitializer">
+    </bean>
 </beans>

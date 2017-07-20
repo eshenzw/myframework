@@ -17,7 +17,7 @@ public class RedisCache implements Cache {
     private String name;
     private long liveTime;
 
-    RedisCache(RedisTemplate<String, Object> redisTemplate,String name, long liveTime){
+    RedisCache(RedisTemplate<String, Object> redisTemplate, String name, long liveTime) {
         this.redisTemplate = redisTemplate;
         this.name = name;
         this.liveTime = liveTime;
@@ -63,6 +63,16 @@ public class RedisCache implements Cache {
                 return 1L;
             }
         });
+    }
+
+    @Override
+    public ValueWrapper putIfAbsent(Object key, Object value) {
+        if (get(key) != null) {
+            return get(key);
+        } else {
+            put(key, value);
+            return (ValueWrapper) value;
+        }
     }
 
     /**

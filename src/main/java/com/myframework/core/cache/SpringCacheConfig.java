@@ -12,6 +12,8 @@ import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.cache.guava.GuavaCache;
+import org.springframework.cache.interceptor.CacheErrorHandler;
+import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.cache.support.SimpleCacheManager;
@@ -122,10 +124,20 @@ public class SpringCacheConfig implements CachingConfigurer {
         return cacheManager;
     }
 
+    @Override
+    public CacheResolver cacheResolver() {
+        return null;
+    }
+
     @Bean
     @Override
     public KeyGenerator keyGenerator() {
         return new SimpleKeyGenerator();
+    }
+
+    @Override
+    public CacheErrorHandler errorHandler() {
+        return null;
     }
 
     /**

@@ -58,13 +58,13 @@
 
     <bean:bean name="JwtAuthenticationTokenFilter" class="com.myframework.token.JwtAuthenticationTokenFilter">
         <bean:property name="jwtTokenUtil" ref="jwtTokenUtil"></bean:property>
-        <bean:property name="tokenHeader" value="Authorization"></bean:property>
+        <bean:property name="tokenHeader" value="${token.header:Authorization}"></bean:property>
         <bean:property name="userDetailsService" ref="defaultUserDetailsService"></bean:property>
     </bean:bean>
 
     <bean:bean name="jwtTokenUtil" class="com.myframework.token.JwtTokenUtil">
-        <bean:property name="tokenHeader" value="Authorization"></bean:property>
-        <bean:property name="secret" value="mySecret"></bean:property>
-        <bean:property name="expiration" value="604800"></bean:property>
+        <bean:property name="tokenHeader" value="${token.header:Authorization}"></bean:property>
+        <bean:property name="secret" value="${token.secret:mySecret}"></bean:property>
+        <bean:property name="expiration" value="${token.expiration:604800}"></bean:property>
     </bean:bean>
 </bean:beans>

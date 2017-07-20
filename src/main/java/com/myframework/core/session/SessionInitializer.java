@@ -21,7 +21,7 @@ public class SessionInitializer extends AbstractHttpSessionApplicationInitialize
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        if(StringUtil.toBoolean(PropertiesUtil.getInstance(Constants.SYSTEM_FILE_PATH).getValue(SpringSessionConfig.SESSION_REDIS_ENABLE))){
+        if(StringUtil.toBoolean(PropertiesUtil.getInstance(Constants.MY_FRAMEWORK_FILE_PATH).getValue(SpringSessionConfig.SESSION_REDIS_ENABLE))){
             super.onStartup(servletContext);
         }
     }

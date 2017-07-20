@@ -41,4 +41,9 @@ public class EmptyCache implements Cache
 	{
 
 	}
+
+	@Override
+	public ValueWrapper putIfAbsent(Object o, Object o1) {
+		return null;
+	}
 }

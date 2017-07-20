@@ -21,8 +21,10 @@ public final class Constants
 	public static final String BUNDLE_KEY = "ApplicationResources";
 	/** 数据库配置文件位置 */
 	public static final String JDBC_FILE_PATH = "config/jdbc.properties";
-	/** 配置文件名 */
+	/** 系统配置文件名 */
 	public static final String SYSTEM_FILE_PATH = "config/system.properties";
+	/** 框架配置文件名 */
+	public static final String MY_FRAMEWORK_FILE_PATH = "config/myframework.properties";
 	/** 文件分隔符 */
 	public static final String FILE_SEP = System.getProperty("file.separator");
 	/** 使用个项目 */
