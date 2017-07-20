@@ -21,13 +21,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
-    @Autowired
     private UserDetailsService userDetailsService;
 
-    @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @Value("${jwt.header:Authorization}")
     private String tokenHeader;
 
     @Override
@@ -58,4 +55,27 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
+    public UserDetailsService getUserDetailsService() {
+        return userDetailsService;
+    }
+
+    public void setUserDetailsService(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    public JwtTokenUtil getJwtTokenUtil() {
+        return jwtTokenUtil;
+    }
+
+    public void setJwtTokenUtil(JwtTokenUtil jwtTokenUtil) {
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
+
+    public String getTokenHeader() {
+        return tokenHeader;
+    }
+
+    public void setTokenHeader(String tokenHeader) {
+        this.tokenHeader = tokenHeader;
+    }
 }

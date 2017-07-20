@@ -4,7 +4,7 @@
     <groupId>com.myframework</groupId>
     <artifactId>MyFramework</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>MyFramework Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <properties>
@@ -475,32 +475,6 @@
         </dependency>
 
     </dependencies>
-    <repositories>
-        <repository>
-            <id>nexus</id>
-            <name>Nexus</name>
-            <url>http://sunbiyun.com:8081/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>nexus</id>
-            <name>Nexus</name>
-            <url>http://sunbiyun.com:8081/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
     <build>
         <finalName>MyFramework</finalName>
         <plugins>

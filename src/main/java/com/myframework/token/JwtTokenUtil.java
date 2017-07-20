@@ -13,25 +13,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
 public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = -3301605591108950415L;
 
-    @Value("${jwt.header:Authorization}")
     private String tokenHeader;
 
-    @Value("${jwt.secret:mySecret}")
     private String secret;
 
-    @Value("${jwt.expiration:604800}")
     private Long expiration;
 
     public String getUsernameFromToken(String token) {
         String username;
         try {
             final Claims claims = getClaimsFromToken(token);
-            username = claims.getSubject();
+            username = (String) claims.get(TokenConstant.CLAIM_KEY_USERNAME);
         } catch (Exception e) {
             username = null;
         }
@@ -166,5 +162,25 @@ public class JwtTokenUtil implements Serializable {
 
     public String getTokenHeader() {
         return tokenHeader;
+    }
+
+    public void setTokenHeader(String tokenHeader) {
+        this.tokenHeader = tokenHeader;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public Long getExpiration() {
+        return expiration;
+    }
+
+    public void setExpiration(Long expiration) {
+        this.expiration = expiration;
     }
 }

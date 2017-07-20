@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bean:beans
+        xmlns:bean="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns="http://www.springframework.org/schema/security"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <global-method-security secured-annotations="enabled"/>
+
+    <http realm="Protected API"
+          use-expressions="true"
+          create-session="stateless"
+          entry-point-ref="unauthorizedEntryPoint"
+          authentication-manager-ref="authenticationManager">
+
+        <!--
+        Added after moving to Spring Boot 1.3 + Spring Security 4.x,
+        otherwise we could not login with basic auth because of: Expected CSRF token not found
+        TODO: Please, mind, that I did not migrate this XML to Spring Security 4.x except for this element
+        -->
+        <csrf disabled="true"/>
+
+        <!--
+        This is not easily possible, because it causes:
+        DEBUG o.s.s.w.a.ExceptionTranslationFilter - Authentication exception occurred; redirecting to authentication entry point
+        org.springframework.security.authentication.AuthenticationCredentialsNotFoundException: An Authentication object was not found in the SecurityContext
+        -->
+        <!--<anonymous enabled="false"/>-->
+        <custom-filter ref="JwtAuthenticationTokenFilter" position="FORM_LOGIN_FILTER"/>
+
+        <intercept-url pattern="/*" access="permitAll"/>
+        <intercept-url pattern="/secure/**" access="isFullyAuthenticated()"/>
+    </http>
+
+    <bean:bean id="unauthorizedEntryPoint" class="com.myframework.token.JwtAuthenticationEntryPoint"/>
+
+    <bean:bean id="md5Encoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
+
+    <authentication-manager id="authenticationManager">
+        <authentication-provider user-service-ref="defaultUserDetailsService">
+            <!--
+            Default password encoder is PlaintextPasswordEncoder, which fits with our hardcoded users.
+            Obviously not a good choice otherwise.
+            -->
+        </authentication-provider>
+    </authentication-manager>
+
+    <bean:bean name="defaultUserDetailsService" class="com.myframework.token.DefaultUserDetailsServiceImpl"/>
+
+    <bean:bean name="JwtAuthenticationTokenFilter" class="com.myframework.token.JwtAuthenticationTokenFilter">
+        <bean:property name="jwtTokenUtil" ref="jwtTokenUtil"></bean:property>
+        <bean:property name="tokenHeader" value="Authorization"></bean:property>
+        <bean:property name="userDetailsService" ref="defaultUserDetailsService"></bean:property>
+    </bean:bean>
+
+    <bean:bean name="jwtTokenUtil" class="com.myframework.token.JwtTokenUtil">
+        <bean:property name="tokenHeader" value="Authorization"></bean:property>
+        <bean:property name="secret" value="mySecret"></bean:property>
+        <bean:property name="expiration" value="604800"></bean:property>
+    </bean:bean>
+</bean:beans>
