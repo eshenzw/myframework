@@ -1,5 +1,6 @@
 package com.myframework.core.filter;
 
+import com.myframework.core.db.multi.DataSourceHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,6 +32,8 @@ public class RequestFilter implements Filter
 	private static final ThreadLocal<HttpServletRequest> requestLocal = new ThreadLocal<HttpServletRequest>();
 	/***/
 	private static final ThreadLocal<HttpServletResponse> responseLocal = new ThreadLocal<HttpServletResponse>();
+	/***/
+	private static final ThreadLocal<String> currentToken = new ThreadLocal<String>();
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
@@ -121,6 +124,28 @@ public class RequestFilter implements Filter
 			log.warn("session在线程内没有找到,可能原因：1、当前调用没有处在web容器内；2、web.xml没有配置RequestFilter过滤器；");
 		}
 		return request.getSession();
+	}
+
+	public static void setCurrentToken(String token){
+		currentToken.set(token);
+	}
+
+	public static String getCurrentToken() {
+		return currentToken.get();
+	}
+
+	/**
+	 *
+	 */
+	private void clearThreadLocal() {
+
+		requestLocal.remove();
+		responseLocal.remove();
+
+		currentToken.remove();
+
+		// 清理掉数据源相关的
+		DataSourceHolder.clearThreadLocal();
 	}
 
 	/**

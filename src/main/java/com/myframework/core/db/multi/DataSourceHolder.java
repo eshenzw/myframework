@@ -40,6 +40,16 @@ public class DataSourceHolder {
         return true;
     }
 
+    /**
+     *
+     */
+    public static void clearThreadLocal() {
+        dbKeyLocal.remove();
+        isMasteLocal.remove();
+        isForceCloseLocal.remove();
+        transactionLocal.remove();
+    }
+
     public static Boolean isForceClose() {
         return isForceCloseLocal.get() == null ? false : isForceCloseLocal.get();
     }

@@ -1,4 +1,4 @@
-package com.myframework.token;
+package com.myframework.core.token;
 
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DevicePlatform;

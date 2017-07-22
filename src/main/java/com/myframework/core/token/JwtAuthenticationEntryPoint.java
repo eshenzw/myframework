@@ -1,4 +1,4 @@
-package com.myframework.token;
+package com.myframework.core.token;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

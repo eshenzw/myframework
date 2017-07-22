@@ -1,4 +1,4 @@
-package com.myframework.token;
+package com.myframework.core.token;
 
 /**
  * Created by zw on 2017/7/19.

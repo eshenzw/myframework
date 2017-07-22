@@ -1,12 +1,10 @@
-package com.myframework.token;
+package com.myframework.core.token;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -16,6 +14,8 @@ import java.util.Map;
 public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = -3301605591108950415L;
+
+    public boolean tokenEnable;
 
     private String tokenHeader;
 
@@ -80,7 +80,7 @@ public class JwtTokenUtil implements Serializable {
         return claims;
     }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -182,5 +182,13 @@ public class JwtTokenUtil implements Serializable {
 
     public void setExpiration(Long expiration) {
         this.expiration = expiration;
+    }
+
+    public boolean isTokenEnable() {
+        return tokenEnable;
+    }
+
+    public void setTokenEnable(boolean tokenEnable) {
+        this.tokenEnable = tokenEnable;
     }
 }

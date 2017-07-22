@@ -1,4 +1,4 @@
-package com.myframework.token;
+package com.myframework.core.token;
 
 import java.io.Serializable;
 
