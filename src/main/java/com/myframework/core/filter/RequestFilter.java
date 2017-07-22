@@ -52,7 +52,7 @@ public class RequestFilter implements Filter
 			request.setAttribute(BASE_PATH,basePath);
 			requestLocal.set((HttpServletRequest) request);
 			responseLocal.set((HttpServletResponse) response);
-			filterChain.doFilter(request, response);
+			filterChain.doFilter(new XSSRequestWrapper((HttpServletRequest) request), response);
 		}
 		catch (ServletException sx)
 		{
