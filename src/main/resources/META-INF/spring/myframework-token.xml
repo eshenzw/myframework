@@ -41,7 +41,7 @@
         <intercept-url pattern="/secure/**" access="isFullyAuthenticated()"/>
     </http>
 
-    <bean:bean id="unauthorizedEntryPoint" class="com.myframework.token.JwtAuthenticationEntryPoint"/>
+    <bean:bean id="unauthorizedEntryPoint" class="com.myframework.core.token.JwtAuthenticationEntryPoint"/>
 
     <bean:bean id="md5Encoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
 
@@ -54,17 +54,23 @@
         </authentication-provider>
     </authentication-manager>
 
-    <bean:bean name="defaultUserDetailsService" class="com.myframework.token.DefaultUserDetailsServiceImpl"/>
+    <bean:bean name="defaultUserDetailsService" class="com.myframework.core.token.DefaultUserDetailsServiceImpl"/>
 
-    <bean:bean name="JwtAuthenticationTokenFilter" class="com.myframework.token.JwtAuthenticationTokenFilter">
-        <bean:property name="jwtTokenUtil" ref="jwtTokenUtil"></bean:property>
-        <bean:property name="tokenHeader" value="${token.header:Authorization}"></bean:property>
-        <bean:property name="userDetailsService" ref="defaultUserDetailsService"></bean:property>
+    <bean:bean name="JwtAuthenticationTokenFilter" class="com.myframework.core.token.JwtAuthenticationTokenFilter">
     </bean:bean>
 
-    <bean:bean name="jwtTokenUtil" class="com.myframework.token.JwtTokenUtil">
+    <bean:bean name="jwtTokenUtil" class="com.myframework.core.token.JwtTokenUtil">
+        <bean:property name="tokenEnable" value="${token.enable:false}"></bean:property>
         <bean:property name="tokenHeader" value="${token.header:Authorization}"></bean:property>
         <bean:property name="secret" value="${token.secret:mySecret}"></bean:property>
         <bean:property name="expiration" value="${token.expiration:604800}"></bean:property>
     </bean:bean>
+
+    <bean:bean name="tokenStrategyExecutor" class="com.myframework.core.token.strategy.TokenStrategyExecutor">
+        <bean:property name="userDetailsService" ref="defaultUserDetailsService"></bean:property>
+        <bean:property name="jwtTokenUtil" ref="jwtTokenUtil"></bean:property>
+    </bean:bean>
+
+    <bean:bean name="baseTokenStrategy" class="com.myframework.core.token.strategy.impl.BaseTokenStrategy"></bean:bean>
+    
 </bean:beans>
