@@ -6,14 +6,14 @@ package com.myframework.core.token.strategy;
  */
 public abstract class TokenStrategy implements Strategy, Comparable<TokenStrategy> {
 
-	@Override
-	public int compareTo(TokenStrategy strategy) {
+    @Override
+    public int compareTo(TokenStrategy strategy) {
 
-		int priority = getStrategyPriority();
+        int priority = getStrategyPriority();
 
-		return strategy.getStrategyPriority() - priority;
+        return strategy.getStrategyPriority() - priority;
 
-	}
+    }
 
 
 }

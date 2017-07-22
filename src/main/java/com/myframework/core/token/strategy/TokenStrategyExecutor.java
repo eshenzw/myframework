@@ -22,101 +22,86 @@ import org.springframework.util.CollectionUtils;
 /**
  * Created by zw on 2017/7/20.
  */
-public class TokenStrategyExecutor implements ApplicationContextAware
-{
+public class TokenStrategyExecutor implements ApplicationContextAware {
 
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
-	private List<TokenStrategy> strategyList = new ArrayList<TokenStrategy>();
+    private List<TokenStrategy> strategyList = new ArrayList<TokenStrategy>();
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException
-	{
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 
-		Map<String, TokenStrategy> strategys = applicationContext.getBeansOfType(TokenStrategy.class);
+        Map<String, TokenStrategy> strategys = applicationContext.getBeansOfType(TokenStrategy.class);
 
-		if (strategys == null || strategys.isEmpty())
-		{
-			return;
-		}
+        if (strategys == null || strategys.isEmpty()) {
+            return;
+        }
 
-		strategyList.addAll(strategys.values());
+        strategyList.addAll(strategys.values());
 
-		Collections.sort(strategyList);
-	}
+        Collections.sort(strategyList);
+    }
 
-	/**
-	 * token 校验
-	 * 
-	 * @param request
-	 * @param reponse
-	 * @return
-	 */
-	public void tokenValidate(HttpServletRequest request, HttpServletResponse reponse) throws TokenException
-	{
+    /**
+     * token 校验
+     *
+     * @param request
+     * @param reponse
+     * @return
+     */
+    public void tokenValidate(HttpServletRequest request, HttpServletResponse reponse) throws TokenException {
 
-		// 获取token，
-		String token = TokenManager.getTokenFromRequest(request);
+        // 获取token，
+        String token = TokenManager.getTokenFromRequest(request);
 
-		if (StringUtils.isEmpty(token))
-		{
-			return;
-		}
+        if (StringUtils.isEmpty(token)) {
+            return;
+        }
 
-		RequestFilter.setCurrentToken(token);
+        RequestFilter.setCurrentToken(token);
 
-		try
-		{
+        try {
 
-			doValidateChain(token, request, reponse);
+            doValidateChain(token, request, reponse);
 
-		}
-		catch (TokenException e)
-		{
+        } catch (TokenException e) {
 
-			throw e;
+            throw e;
 
-		}
-		catch (Exception e)
-		{
+        } catch (Exception e) {
 
-			logger.error(
-					"TokenStrategyExecutor execute token validate unexpected failed!! message is :" + e.getMessage(), e);
+            logger.error(
+                    "TokenStrategyExecutor execute token validate unexpected failed!! message is :" + e.getMessage(), e);
 
-			throw new TokenException("unkown exceptin");
-		}
+            throw new TokenException("unkown exceptin");
+        }
 
-	}
+    }
 
-	/**
-	 * 
-	 * @param token
-	 * @param request
-	 * @param reponse
-	 * @return
-	 */
-	private void doValidateChain(String token, HttpServletRequest request, HttpServletResponse reponse)
-		throws TokenException
-	{
+    /**
+     * @param token
+     * @param request
+     * @param reponse
+     * @return
+     */
+    private void doValidateChain(String token, HttpServletRequest request, HttpServletResponse reponse)
+            throws TokenException {
 
-		if (CollectionUtils.isEmpty(strategyList))
-		{
-			return;
-		}
+        if (CollectionUtils.isEmpty(strategyList)) {
+            return;
+        }
 
-		for (TokenStrategy strategy : strategyList)
-		{
+        for (TokenStrategy strategy : strategyList) {
 
-			StrategyEnum result = strategy.vaidateToken(token, request, reponse);
+            StrategyEnum result = strategy.vaidateToken(token, request, reponse);
 
-			if (result == StrategyEnum.STRATEGY_VALIDATE_SUCCESS_ADN_BREAK)
-			{
-				break;
+            if (result == StrategyEnum.STRATEGY_VALIDATE_SUCCESS_ADN_BREAK) {
+                break;
 
-			}
+            }
 
-		}
+        }
 
-	}
+    }
 
 }
