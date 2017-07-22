@@ -9,14 +9,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.myframework.core.filter.RequestFilter;
+import com.myframework.core.token.JwtTokenUtil;
 import com.myframework.core.token.TokenManager;
-import com.myframework.exception.TokenException;
+import com.myframework.core.token.exception.TokenException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -25,6 +29,10 @@ import org.springframework.util.CollectionUtils;
 public class TokenStrategyExecutor implements ApplicationContextAware {
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    private JwtTokenUtil jwtTokenUtil;
+
+    private UserDetailsService userDetailsService;
 
     private List<TokenStrategy> strategyList = new ArrayList<TokenStrategy>();
 
@@ -91,17 +99,45 @@ public class TokenStrategyExecutor implements ApplicationContextAware {
             return;
         }
 
-        for (TokenStrategy strategy : strategyList) {
+        // authToken.startsWith("Bearer ")
+        // String authToken = header.substring(7);
+        String username = jwtTokenUtil.getUsernameFromToken(token);
 
-            StrategyEnum result = strategy.vaidateToken(token, request, reponse);
+        logger.info("checking authentication für user " + username);
 
-            if (result == StrategyEnum.STRATEGY_VALIDATE_SUCCESS_ADN_BREAK) {
-                break;
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            // It is not compelling necessary to load the use details from the database. You could also store the information
+            // in the token and read it from it. It's up to you ;)
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+            for (TokenStrategy strategy : strategyList) {
+
+                StrategyEnum result = strategy.vaidateToken(token, userDetails, request, reponse);
+
+                if (result == StrategyEnum.STRATEGY_VALIDATE_SUCCESS_ADN_BREAK) {
+                    break;
+
+                }
 
             }
-
         }
 
     }
 
+    public JwtTokenUtil getJwtTokenUtil() {
+        return jwtTokenUtil;
+    }
+
+    public void setJwtTokenUtil(JwtTokenUtil jwtTokenUtil) {
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
+
+    public UserDetailsService getUserDetailsService() {
+        return userDetailsService;
+    }
+
+    public void setUserDetailsService(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 }

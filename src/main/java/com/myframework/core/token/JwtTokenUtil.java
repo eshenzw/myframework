@@ -23,6 +23,8 @@ public class JwtTokenUtil implements Serializable {
 
     private Long expiration;
 
+    private String redirectUrl;
+
     public String getUsernameFromToken(String token) {
         String username;
         try {
@@ -190,5 +192,13 @@ public class JwtTokenUtil implements Serializable {
 
     public void setTokenEnable(boolean tokenEnable) {
         this.tokenEnable = tokenEnable;
+    }
+
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
     }
 }

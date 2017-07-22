@@ -20,80 +20,72 @@ import java.util.List;
 /**
  * Created by zw on 2017/7/19.
  */
-public class TokenManager
-{
+public class TokenManager {
 
-	public static final String CONSTANT_AUTHENTICATION = "authenticationManager";
+    public static final String CONSTANT_AUTHENTICATION = "authenticationManager";
 
-	public static JwtTokenUtil jwtTokenUtil = SpringContextUtil.getBean(JwtTokenUtil.class);
-
-	public static boolean isTokenEnable(){
-	    return jwtTokenUtil.isTokenEnable();
+    public static boolean isTokenEnable() {
+        return getJwtTokenUtil().isTokenEnable();
     }
 
-	public static String getTokenFromRequest(HttpServletRequest request){
-        String token = request.getHeader(jwtTokenUtil.getTokenHeader());
-        return  token;
+    public static String getTokenFromRequest(HttpServletRequest request) {
+        String token = request.getHeader(getJwtTokenUtil().getTokenHeader());
+        return token;
     }
 
-	public static boolean isTokenExpired(String token)
-	{
-		return jwtTokenUtil.isTokenExpired(token);
-	}
+    public static boolean isTokenExpired(String token) {
+        return getJwtTokenUtil().isTokenExpired(token);
+    }
 
-	public static boolean validateToken(String token, UserDetails userDetails)
-	{
-		return jwtTokenUtil.validateToken(token, userDetails);
-	}
+    public static boolean validateToken(String token, UserDetails userDetails) {
+        return getJwtTokenUtil().validateToken(token, userDetails);
+    }
 
-	public static ResponseEntity<?> createAuthenticationToken(JwtAuthenticationRequest authenticationRequest,
-			Device device, UserDetails userDetails) throws AuthenticationException
-	{
+    public static ResponseEntity<?> createAuthenticationToken(JwtAuthenticationRequest authenticationRequest,
+                                                              Device device, UserDetails userDetails) throws AuthenticationException {
 
-		AuthenticationManager authenticationManager = (AuthenticationManager) SpringContextUtil
-				.getBean(CONSTANT_AUTHENTICATION);
+        AuthenticationManager authenticationManager = (AuthenticationManager) SpringContextUtil
+                .getBean(CONSTANT_AUTHENTICATION);
 
-		// Perform the security
-		final Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
-						authenticationRequest.getPassword()));
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+        // Perform the security
+        final Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
+                        authenticationRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		// Reload password post-security so we can generate token
-		JwtTokenUtil jwtTokenUtil = SpringContextUtil.getBean(JwtTokenUtil.class);
-		final String token = jwtTokenUtil.generateToken(userDetails, device);
+        // Reload password post-security so we can generate token
+        JwtTokenUtil jwtTokenUtil = SpringContextUtil.getBean(JwtTokenUtil.class);
+        final String token = jwtTokenUtil.generateToken(userDetails, device);
 
-		// Return the token
-		return new ResponseEntity<JwtAuthenticationResponse>(new JwtAuthenticationResponse(token), HttpStatus.OK);
-	}
+        // Return the token
+        return new ResponseEntity<JwtAuthenticationResponse>(new JwtAuthenticationResponse(token), HttpStatus.OK);
+    }
 
-	public static ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request, UserDetails userDetails)
-	{
-		String token = request.getHeader(jwtTokenUtil.getTokenHeader());
-		String username = jwtTokenUtil.getUsernameFromToken(token);
-		JwtUser user = (JwtUser) userDetails;
+    public static ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request, UserDetails userDetails) {
+        String token = request.getHeader(getJwtTokenUtil().getTokenHeader());
+        String username = getJwtTokenUtil().getUsernameFromToken(token);
+        JwtUser user = (JwtUser) userDetails;
 
-		if (jwtTokenUtil.canTokenBeRefreshed(token, user.getLastPasswordResetDate()))
-		{
-			String refreshedToken = jwtTokenUtil.refreshToken(token);
-			return new ResponseEntity<JwtAuthenticationResponse>(new JwtAuthenticationResponse(refreshedToken),
-					HttpStatus.OK);
-		}
-		else
-		{
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		}
-	}
+        if (getJwtTokenUtil().canTokenBeRefreshed(token, user.getLastPasswordResetDate())) {
+            String refreshedToken = getJwtTokenUtil().refreshToken(token);
+            return new ResponseEntity<JwtAuthenticationResponse>(new JwtAuthenticationResponse(refreshedToken),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
 
-	public List<String> getAuthentications()
-	{
-		Collection<? extends GrantedAuthority> auths = SecurityContextHolder.getContext().getAuthentication()
-				.getAuthorities();
-		List<String> list = new ArrayList<String>();
-		for (GrantedAuthority auth : auths)
-		{
-			list.add(auth.getAuthority());
-		}
-		return list;
-	}
+    public List<String> getAuthentications() {
+        Collection<? extends GrantedAuthority> auths = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities();
+        List<String> list = new ArrayList<String>();
+        for (GrantedAuthority auth : auths) {
+            list.add(auth.getAuthority());
+        }
+        return list;
+    }
+
+    public static JwtTokenUtil getJwtTokenUtil() {
+        return (JwtTokenUtil) SpringContextUtil.getBean(JwtTokenUtil.class);
+    }
 }

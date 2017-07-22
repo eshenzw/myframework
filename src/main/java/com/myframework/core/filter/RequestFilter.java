@@ -109,6 +109,14 @@ public class RequestFilter implements Filter {
         return request.getSession();
     }
 
+    public static String getBasePath() {
+        return (String) getRequest().getAttribute(BASE_PATH);
+    }
+
+    public static String getContextPath() {
+        return (String) getRequest().getAttribute(CONTEXT_PATH);
+    }
+
     public static void setCurrentToken(String token) {
         currentToken.set(token);
     }
@@ -120,7 +128,7 @@ public class RequestFilter implements Filter {
     /**
      *
      */
-    private void clearThreadLocal() {
+    public static void clearThreadLocal() {
 
         requestLocal.remove();
         responseLocal.remove();
