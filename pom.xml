@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.myframework</groupId>
-    <artifactId>MyFramework</artifactId>
+    <artifactId>myframework</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0</version>
-    <name>MyFramework Maven Webapp</name>
+    <name>myframework Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <properties>
         <!-- spring版本号 -->
@@ -476,7 +476,7 @@
 
     </dependencies>
     <build>
-        <finalName>MyFramework</finalName>
+        <finalName>myframework</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
