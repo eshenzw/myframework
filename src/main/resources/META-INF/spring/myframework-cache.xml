@@ -22,6 +22,8 @@
     <bean id="cacheJedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
         <property name="hostName" value="${cache.redis.host}" />
         <property name="port" value="${cache.redis.port}"/>
+        <property name="password" value="${cache.redis.pass}" />
+        <property name="timeout" value="${cache.redis.timeout}" />
         <property name="poolConfig" ref="cacheJedisPoolConfig" />
         <property name="usePool" value="true"/>
     </bean>
