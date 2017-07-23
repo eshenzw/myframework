@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
@@ -170,6 +171,7 @@ public class SpringCacheConfig implements CachingConfigurer {
     }
 
     @Autowired
+    @Qualifier("cacheRedisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
 
     /**
