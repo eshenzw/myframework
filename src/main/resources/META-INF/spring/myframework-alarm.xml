@@ -1,0 +1,116 @@
+<?xml  version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--支持异步的事件-->
+    <bean  id="event-discard-policy" class="java.util.concurrent.ThreadPoolExecutor.DiscardPolicy"/>
+    <bean id="event-thread-pool-executor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="queueCapacity" value="50000"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="rejectedExecutionHandler" ref="event-discard-policy"/>
+    </bean>
+    <bean id="applicationEventMulticaster"
+          class="org.springframework.context.event.SimpleApplicationEventMulticaster">
+        <property name="taskExecutor" ref="event-thread-pool-executor"/>
+    </bean>
+
+
+    <!-- influxdb ref-->
+    <bean id="influxdbHolder" class="com.myframework.core.alarm.influxdb.InfluxDBHolder">
+        <constructor-arg name="dbUrl" value="${alarm.influxdb.url:http://127.0.0.1:8086}" />
+        <constructor-arg name="user"  value="${alarm.influxdb.user:root}"/>
+        <constructor-arg name="password"  value="${alarm.influxdb.password:root}"/>
+    </bean>
+
+    <bean id="eventReporter" class="com.myframework.core.alarm.influxdb.InfluxDataReporter">
+        <constructor-arg name="influxDBHolder" ref="influxdbHolder"/>
+        <constructor-arg name="retentionPolicy" value="${alarm.influxdb.retentionPolicy:default}"/>
+     </bean>
+
+
+
+    <bean id="serviceAccessEventHandler" class="com.myframework.core.alarm.event.handler.ServiceAccessEventHandler">
+        <property name="eventReporter" ref="eventReporter"/>
+        <property name="tag_context" value="${web.context:default}"/>
+    </bean>
+    
+
+    <bean id="serverExceptionEventHandler" class="com.myframework.core.alarm.event.handler.ServerExceptionEventHandler">
+        <property name="eventReporter" ref="eventReporter"/>
+        <property name="tag_context" value="${web.context:default}"/>
+    </bean>
+
+
+    <bean id="sessionExceptionEventHandler" class="com.myframework.core.alarm.event.handler.SessionExceptionEventHandler">
+        <property name="eventReporter" ref="eventReporter"/>
+        <property name="tag_context" value="${web.context:default}"/>
+    </bean>
+
+
+    
+    <bean id="agentServiceEventHandler" class="com.myframework.core.alarm.event.handler.AgentServiceEventHandler">
+        <property name="eventReporter" ref="eventReporter"/>
+        <property name="tag_context" value="${web.context:default}"/>
+    </bean>
+
+
+
+   <bean id="abstractThreadProfileInterceptor" class="com.myframework.core.alarm.monitor.interceptor.AbstractThreadProfileInterceptor" abstract="true">
+         <property name="threshold" value="${profile.threshold:2000}"/>
+         
+         <property name="alarmExcludeHandler" ref="alarmExcludeHandler"/>
+    </bean> 
+    
+    <bean id="strutsThreadProfileInterceptor" class="com.myframework.core.alarm.monitor.interceptor.ThreadProfileInterceptor4Struts" parent="abstractThreadProfileInterceptor">
+    </bean>
+    
+    
+    <bean id="springMvcThreadProfileInterceptor" class="com.myframework.core.alarm.monitor.interceptor.ThreadProfileInterceptor4SpringMvc" parent="abstractThreadProfileInterceptor">
+    </bean>    
+    
+    
+
+    <!--service接口调用拦截器-->
+
+    <bean id="serviceMethodInterceptor" class="com.myframework.core.alarm.monitor.interceptor.MethodProfileInterceptor">
+    </bean>
+    
+    <!--调用系统自行配置
+    <aop:config>
+        <aop:pointcut id="serviceMethodPoint"
+                      expression="(execution(* com.fh..*.service.*.*(..))) or (execution(* com.fiberhome.*.*.service.*.*(..))) "/>
+        <aop:advisor pointcut-ref="serviceMethodPoint" advice-ref="serviceMethodInterceptor"/>
+    </aop:config>
+    -->
+    
+    
+    <bean id="EventDeterminater" class="com.myframework.core.alarm.EventDeterminater">
+        <property name="serviceAcessEventOpen" value="${alarm.serviceAcessEvent.open:true}"/>
+        <property name="exceptionEventOpen" value="${alarm.exceptionEvent.open:true}"/>
+        <property name="sessionExceptionEventOpen" value="${alarm.sessionExceptionEvent.open:true}"/>
+        <property name="agentServiceAccessOpen" value="${alarm.agentServiceAccessEvent.open:true}"/>
+        <property name="rabbitMqSendEventOpen" value="${alarm.rabbitMqSendEventOpen.open:true}"/>
+
+    </bean>    
+    
+
+    <bean id="EventPublisherUtils" class="com.myframework.core.alarm.EventPublisherUtils"/>
+
+
+    <!--  serviceaccess 排除 -->
+    <bean id="serviceAccessExcludeMap" class="com.myframework.core.error.exception.internel.yml.MyYamlMapFactoryBean">
+        <property name="resources">
+            <list>
+                <value>classpath*:META-INF/alarmexclude/service-access-exclude*.yml</value>
+            </list>
+        </property>
+    </bean>
+
+   <!--报警排除-->
+   <bean id="alarmExcludeHandler" class="com.myframework.core.alarm.event.exclude.AlarmExcludeHandler" >
+       <property name="serviceAccessExcludeMap" ref="serviceAccessExcludeMap"/>
+   </bean>
+    
+
+</beans>
