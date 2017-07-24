@@ -7,11 +7,12 @@
 
     <!-- redis -->
     <bean id="sessionJedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxIdle" value="1" />
-        <property name="maxTotal" value="5" />
+        <property name="maxIdle" value="${redis.pool.maxIdle:1}" />
+        <property name="maxTotal" value="${redis.pool.maxTotal:5}" />
         <property name="blockWhenExhausted" value="true" />
         <property name="maxWaitMillis" value="30000" />
-        <property name="testOnBorrow" value="true" />
+        <property name="testOnBorrow" value="${redis.pool.testOnBorrow:false}" />
+        <property name="testWhileIdle" value="${redis.pool.testWhileIdle:true}" />
     </bean>
 
     <bean id="sessionJedisConnectionFactory"
