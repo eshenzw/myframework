@@ -14,19 +14,17 @@ public class InfluxDBHolder {
     private final InfluxDB influxDB;
 
 
-
-
     public InfluxDBHolder(String dbUrl, String user, String password) {
 
-        //monitor, default
-        influxDB = org.influxdb.InfluxDBFactory.connect(dbUrl, user, password);
-        //>1500个或者50毫秒就开始写入到db中 异步写
-        influxDB.enableBatch(1500, 50, TimeUnit.MILLISECONDS);
-
-
+        if (dbUrl != null && !"".equals(dbUrl) && !"disable".equals(dbUrl)) {
+            //monitor, default
+            influxDB = org.influxdb.InfluxDBFactory.connect(dbUrl, user, password);
+            //>1500个或者50毫秒就开始写入到db中 异步写
+            influxDB.enableBatch(1500, 50, TimeUnit.MILLISECONDS);
+        } else {
+            influxDB = null;
+        }
     }
-
-
 
 
     public InfluxDB getInfluxDB() {

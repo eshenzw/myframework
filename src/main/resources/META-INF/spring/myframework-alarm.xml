@@ -1,7 +1,12 @@
 <?xml  version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+    ">
 
     <!--支持异步的事件-->
     <bean  id="event-discard-policy" class="java.util.concurrent.ThreadPoolExecutor.DiscardPolicy"/>
@@ -18,7 +23,7 @@
 
     <!-- influxdb ref-->
     <bean id="influxdbHolder" class="com.myframework.core.alarm.influxdb.InfluxDBHolder">
-        <constructor-arg name="dbUrl" value="${alarm.influxdb.url:http://127.0.0.1:8086}" />
+        <constructor-arg name="dbUrl" value="${alarm.influxdb.url:disable}" />
         <constructor-arg name="user"  value="${alarm.influxdb.user:root}"/>
         <constructor-arg name="password"  value="${alarm.influxdb.password:root}"/>
     </bean>
@@ -67,22 +72,28 @@
     
     
     <bean id="springMvcThreadProfileInterceptor" class="com.myframework.core.alarm.monitor.interceptor.ThreadProfileInterceptor4SpringMvc" parent="abstractThreadProfileInterceptor">
-    </bean>    
-    
-    
+    </bean>
+
+    <!-- 把这个放在springmvc配置文件里 -->
+    <!--<mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/*"/>
+            <bean class="com.myframework.core.alarm.monitor.interceptor.ThreadProfileInterceptor4SpringMvc" parent="abstractThreadProfileInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>-->
 
     <!--service接口调用拦截器-->
 
     <bean id="serviceMethodInterceptor" class="com.myframework.core.alarm.monitor.interceptor.MethodProfileInterceptor">
     </bean>
     
-    <!--调用系统自行配置
+    <!--调用系统自行配置 -->
     <aop:config>
         <aop:pointcut id="serviceMethodPoint"
-                      expression="(execution(* com.fh..*.service.*.*(..))) or (execution(* com.fiberhome.*.*.service.*.*(..))) "/>
+                      expression="(execution(* com.sws..*.controller.*.*(..))) or (execution(* com.sws.*.*.service.*.*(..))) "/>
         <aop:advisor pointcut-ref="serviceMethodPoint" advice-ref="serviceMethodInterceptor"/>
     </aop:config>
-    -->
+
     
     
     <bean id="EventDeterminater" class="com.myframework.core.alarm.EventDeterminater">

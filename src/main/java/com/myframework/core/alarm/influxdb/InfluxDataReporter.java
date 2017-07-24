@@ -34,8 +34,7 @@ public class InfluxDataReporter implements EventReporter {
     private Random random = new Random();
 
 
-
-    public InfluxDataReporter(InfluxDBHolder influxDBHolder,String retentionPolicy){
+    public InfluxDataReporter(InfluxDBHolder influxDBHolder, String retentionPolicy) {
         this.influxDB = influxDBHolder.getInfluxDB();
         this.retentionPolicy = retentionPolicy;
 
@@ -45,56 +44,61 @@ public class InfluxDataReporter implements EventReporter {
     @Override
     public void report(String database, String measurement, Map<String, String> tags, Map<String, Object> fields) {
 
-       InfluxDB db = this.getDatabase(database);
+        InfluxDB db = this.getDatabase(database);
 
-        Point.Builder pointBuilder = Point.measurement(measurement).time(System.currentTimeMillis() * 1000000 + random.nextInt(999999), TimeUnit.NANOSECONDS);
+        if (db != null) {
+            Point.Builder pointBuilder = Point.measurement(measurement).time(System.currentTimeMillis() * 1000000 + random.nextInt(999999), TimeUnit.NANOSECONDS);
 
 
-        //add tags
-        if (tags != null) {
-            for (Map.Entry<String, String> tagEntry : tags.entrySet()) {
-                pointBuilder.tag(tagEntry.getKey(), tagEntry.getValue());
-            }
-        }
-
-        // add fields
-        if (fields != null) {
-            for (Map.Entry<String, Object> otherEntry : fields.entrySet()) {
-                //ignore tag
-                if (tags != null && tags.keySet() != null && tags.keySet().contains(otherEntry.getKey())) {
-                    continue;
+            //add tags
+            if (tags != null) {
+                for (Map.Entry<String, String> tagEntry : tags.entrySet()) {
+                    pointBuilder.tag(tagEntry.getKey(), tagEntry.getValue());
                 }
-
-                //ignore null
-                if (otherEntry.getKey() == null || otherEntry.getValue() == null) {
-                    continue;
-                }
-
-                pointBuilder.field(otherEntry.getKey(),  otherEntry.getValue());
             }
+
+            // add fields
+            if (fields != null) {
+                for (Map.Entry<String, Object> otherEntry : fields.entrySet()) {
+                    //ignore tag
+                    if (tags != null && tags.keySet() != null && tags.keySet().contains(otherEntry.getKey())) {
+                        continue;
+                    }
+
+                    //ignore null
+                    if (otherEntry.getKey() == null || otherEntry.getValue() == null) {
+                        continue;
+                    }
+
+                    pointBuilder.field(otherEntry.getKey(), otherEntry.getValue());
+                }
+            }
+
+            //never throw exception
+            try {
+                db.write(database, retentionPolicy, pointBuilder.build());
+                log.debug("write {} with tags{} to {} success.", measurement, tags, database);
+            } catch (Exception e) {
+                log.error("write to influxdb error", e);
+            }
+        } else {
+            log.warn("write to influxdb error,influxdb is disable");
         }
 
-        //never throw exception
-        try {
-            db.write(database, retentionPolicy, pointBuilder.build());
-            log.debug("write {} with tags{} to {} success.", measurement, tags, database);
-        } catch (Exception e) {
-            log.error("write to influxdb error", e);
-        }
     }
 
 
-    private InfluxDB getDatabase(String databaseName){
+    private InfluxDB getDatabase(String databaseName) {
 
-        InfluxDB db ;
+        InfluxDB db;
 
-        switch (databaseName){
+        switch (databaseName) {
             case "server_monitor": {
                 db = this.influxDB;
                 break;
             }
 
-            default:{
+            default: {
                 db = this.influxDB;
             }
         }

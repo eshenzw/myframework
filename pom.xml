@@ -207,6 +207,12 @@
             <groupId>net.sourceforge.jexcelapi</groupId>
             <artifactId>jxl</artifactId>
             <version>2.6.12</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>quartz</groupId>
@@ -406,12 +412,12 @@
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
+            <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <artifactId>logback-core</artifactId>
             <version>${logback.version}</version>
         </dependency>
         <!-- log end -->
@@ -529,6 +535,12 @@
                 </exclusion>
 
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.1</version>
         </dependency>
     </dependencies>
     <build>
