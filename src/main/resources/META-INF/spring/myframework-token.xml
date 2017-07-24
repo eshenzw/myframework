@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bean:beans
-        xmlns:bean="http://www.springframework.org/schema/beans"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:context="http://www.springframework.org/schema/context"
-        xmlns:aop="http://www.springframework.org/schema/aop"
-        xmlns="http://www.springframework.org/schema/security"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd
@@ -14,20 +13,23 @@
        http://www.springframework.org/schema/security
        http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <global-method-security secured-annotations="enabled"/>
+    <!-- 支持spring security对Controller的方法级AOP安全控制 -->
+    <!-- 该配置务必在spring mvc 配置文件中配置一份  -->
+    <security:global-method-security pre-post-annotations="enabled"/>
+    <!--<security:global-method-security secured-annotations="enabled"/>-->
 
-    <http realm="Protected API"
-          use-expressions="true"
-          create-session="stateless"
-          entry-point-ref="unauthorizedEntryPoint"
-          authentication-manager-ref="authenticationManager">
+    <security:http realm="Protected API"
+                   use-expressions="true"
+                   create-session="stateless"
+                   entry-point-ref="unauthorizedEntryPoint"
+                   authentication-manager-ref="authenticationManager">
 
         <!--
         Added after moving to Spring Boot 1.3 + Spring Security 4.x,
         otherwise we could not login with basic auth because of: Expected CSRF token not found
         TODO: Please, mind, that I did not migrate this XML to Spring Security 4.x except for this element
         -->
-        <csrf disabled="true"/>
+        <security:csrf disabled="true"/>
 
         <!--
         This is not easily possible, because it causes:
@@ -35,48 +37,48 @@
         org.springframework.security.authentication.AuthenticationCredentialsNotFoundException: An Authentication object was not found in the SecurityContext
         -->
         <!--<anonymous enabled="false"/>-->
-        <custom-filter ref="JwtAuthenticationTokenFilter" position="FORM_LOGIN_FILTER"/>
+        <security:custom-filter ref="JwtAuthenticationTokenFilter" position="FORM_LOGIN_FILTER"/>
 
-        <intercept-url pattern="/*" access="permitAll"/>
-        <intercept-url pattern="/secure/**" access="isFullyAuthenticated()"/>
-    </http>
+        <security:intercept-url pattern="/*" access="permitAll"/>
+        <security:intercept-url pattern="/secure/**" access="isFullyAuthenticated()"/>
+    </security:http>
 
-    <bean:bean id="unauthorizedEntryPoint" class="com.myframework.core.token.JwtAuthenticationEntryPoint"/>
+    <bean id="unauthorizedEntryPoint" class="com.myframework.core.token.JwtAuthenticationEntryPoint"/>
 
-    <bean:bean id="md5Encoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder">
-    </bean:bean>
+    <bean id="md5Encoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder">
+    </bean>
 
-    <authentication-manager id="authenticationManager">
-        <authentication-provider user-service-ref="defaultUserDetailsService">
+    <security:authentication-manager id="authenticationManager">
+        <security:authentication-provider user-service-ref="defaultUserDetailsService">
             <!--
             Default password encoder is PlaintextPasswordEncoder, which fits with our hardcoded users.
             Obviously not a good choice otherwise.
             -->
-            <password-encoder ref="md5Encoder">
-                <salt-source user-property="salt"></salt-source>
-            </password-encoder>
-        </authentication-provider>
-    </authentication-manager>
+            <security:password-encoder ref="md5Encoder">
+                <security:salt-source user-property="salt"></security:salt-source>
+            </security:password-encoder>
+        </security:authentication-provider>
+    </security:authentication-manager>
 
-    <bean:bean name="defaultUserDetailsService" class="com.myframework.core.token.DefaultUserDetailsServiceImpl">
-    </bean:bean>
+    <bean name="defaultUserDetailsService" class="com.myframework.core.token.DefaultUserDetailsServiceImpl">
+    </bean>
 
-    <bean:bean name="JwtAuthenticationTokenFilter" class="com.myframework.core.token.JwtAuthenticationTokenFilter">
-    </bean:bean>
+    <bean name="JwtAuthenticationTokenFilter" class="com.myframework.core.token.JwtAuthenticationTokenFilter">
+    </bean>
 
-    <bean:bean name="jwtTokenUtil" class="com.myframework.core.token.JwtTokenUtil">
-        <bean:property name="tokenEnable" value="${token.enable:false}"></bean:property>
-        <bean:property name="tokenHeader" value="${token.header:Authorization}"></bean:property>
-        <bean:property name="secret" value="${token.secret:mySecret}"></bean:property>
-        <bean:property name="expiration" value="${token.expiration:604800}"></bean:property>
-    </bean:bean>
+    <bean name="jwtTokenUtil" class="com.myframework.core.token.JwtTokenUtil">
+        <property name="tokenEnable" value="${token.enable:false}"></property>
+        <property name="tokenHeader" value="${token.header:Authorization}"></property>
+        <property name="secret" value="${token.secret:mySecret}"></property>
+        <property name="expiration" value="${token.expiration:604800}"></property>
+    </bean>
 
-    <bean:bean name="tokenStrategyExecutor" class="com.myframework.core.token.strategy.TokenStrategyExecutor">
-        <bean:property name="userDetailsService" ref="${token.userDetailsServiceName}"></bean:property>
-        <bean:property name="jwtTokenUtil" ref="jwtTokenUtil"></bean:property>
-    </bean:bean>
+    <bean name="tokenStrategyExecutor" class="com.myframework.core.token.strategy.TokenStrategyExecutor">
+        <property name="userDetailsService" ref="${token.userDetailsServiceName}"></property>
+        <property name="jwtTokenUtil" ref="jwtTokenUtil"></property>
+    </bean>
 
-    <bean:bean name="baseTokenStrategy" class="com.myframework.core.token.strategy.impl.BaseTokenStrategy"></bean:bean>
+    <bean name="baseTokenStrategy" class="com.myframework.core.token.strategy.impl.BaseTokenStrategy"></bean>
 
     <!-- 下面注释这段放在web.xml里 -->
     <!--<filter>
@@ -87,4 +89,4 @@
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>-->
-</bean:beans>
+</beans>
