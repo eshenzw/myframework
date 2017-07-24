@@ -43,7 +43,8 @@
 
     <bean:bean id="unauthorizedEntryPoint" class="com.myframework.core.token.JwtAuthenticationEntryPoint"/>
 
-    <bean:bean id="md5Encoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
+    <bean:bean id="md5Encoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder">
+    </bean:bean>
 
     <authentication-manager id="authenticationManager">
         <authentication-provider user-service-ref="defaultUserDetailsService">
@@ -51,10 +52,14 @@
             Default password encoder is PlaintextPasswordEncoder, which fits with our hardcoded users.
             Obviously not a good choice otherwise.
             -->
+            <password-encoder ref="md5Encoder">
+                <salt-source user-property="salt"></salt-source>
+            </password-encoder>
         </authentication-provider>
     </authentication-manager>
 
-    <bean:bean name="defaultUserDetailsService" class="com.myframework.core.token.DefaultUserDetailsServiceImpl"/>
+    <bean:bean name="defaultUserDetailsService" class="com.myframework.core.token.DefaultUserDetailsServiceImpl">
+    </bean:bean>
 
     <bean:bean name="JwtAuthenticationTokenFilter" class="com.myframework.core.token.JwtAuthenticationTokenFilter">
     </bean:bean>
@@ -67,10 +72,19 @@
     </bean:bean>
 
     <bean:bean name="tokenStrategyExecutor" class="com.myframework.core.token.strategy.TokenStrategyExecutor">
-        <bean:property name="userDetailsService" ref="defaultUserDetailsService"></bean:property>
+        <bean:property name="userDetailsService" ref="${token.userDetailsServiceName}"></bean:property>
         <bean:property name="jwtTokenUtil" ref="jwtTokenUtil"></bean:property>
     </bean:bean>
 
     <bean:bean name="baseTokenStrategy" class="com.myframework.core.token.strategy.impl.BaseTokenStrategy"></bean:bean>
-    
+
+    <!-- 下面注释这段放在web.xml里 -->
+    <!--<filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>-->
 </bean:beans>

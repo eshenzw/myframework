@@ -26,18 +26,10 @@ public class BaseTokenStrategy extends TokenStrategy {
     public StrategyEnum vaidateToken(String token, UserDetails userDetails, HttpServletRequest request, HttpServletResponse reponse)
             throws TokenException {
 
-        if (!TokenManager.isTokenExpired(token)) {
+        if (TokenManager.isTokenExpired(token)) {
             throw new TokenException("toke expired!");
         }
-        
-        // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
-        // the database compellingly. Again it's up to you ;)
-        if (TokenManager.validateToken(token, userDetails)) {
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            logger.info("authenticated user " + userDetails.getUsername() + ", setting security context");
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+
         return StrategyEnum.STRATEGY_VALIDATE_SUCCESS;
 
     }

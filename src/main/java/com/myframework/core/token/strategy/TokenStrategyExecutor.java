@@ -18,9 +18,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -110,6 +112,15 @@ public class TokenStrategyExecutor implements ApplicationContextAware {
             // It is not compelling necessary to load the use details from the database. You could also store the information
             // in the token and read it from it. It's up to you ;)
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+            // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
+            // the database compellingly. Again it's up to you ;)
+            if (TokenManager.validateToken(token, userDetails)) {
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                logger.info("authenticated user " + userDetails.getUsername() + ", setting security context");
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
 
             for (TokenStrategy strategy : strategyList) {
 
