@@ -5,7 +5,7 @@ import com.myframework.core.zookeeper.model.ZkNodeData;
 
 /**
  * 
- * @author zhangjun
+ * created by zw
  *
  */
 public interface ZkNodeListener {

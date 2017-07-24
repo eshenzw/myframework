@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * zookeeper节点
  * 
- * @author zhangjun
+ * created by zw
  *
  */
 public class Node implements Serializable{

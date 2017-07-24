@@ -19,7 +19,7 @@ import com.google.common.collect.Maps;
 /**
  * 管理自定义的节点监听器
  * 
- * @author zhangjun
+ * created by zw
  *
  */
 public class CustomerZKListenerMgr implements ApplicationContextAware {

@@ -4,7 +4,7 @@ package com.myframework.core.zookeeper.election;
 /**
  * 实现leader选举，实现这个抽象类，注册到sprinng 
  * 
- * @author zhangjun
+ * created by zw
  *
  */
 public abstract class ZkLeaderLatcherListener   {

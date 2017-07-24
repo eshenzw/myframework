@@ -21,7 +21,7 @@ import org.springframework.util.CollectionUtils;
  * 
  * 屏蔽上层业务对于底层细节的理解，包装对连接监听的处理
  * 
- * @author zhangjun
+ * created by zw
  *
  */
 public class DefaultConnectionStateListener implements ConnectionStateListener, ApplicationContextAware {

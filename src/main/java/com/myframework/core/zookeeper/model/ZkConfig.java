@@ -1,7 +1,7 @@
 package com.myframework.core.zookeeper.model;
 
 /**
- * @author zhangjun
+ * created by zw
  *
  */
 public class ZkConfig {

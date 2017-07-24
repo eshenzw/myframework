@@ -7,7 +7,7 @@ import org.apache.curator.framework.state.ConnectionState;
 
 /**
  * 连接重建的监听器，在连接重建时，需要对节点的监听重新注册<br>
- * @author zhangjun
+ * created by zw
  *
  */
 public interface ZKConnectionListener {

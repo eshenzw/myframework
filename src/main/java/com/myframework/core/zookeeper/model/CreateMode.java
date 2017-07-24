@@ -3,7 +3,7 @@ package com.myframework.core.zookeeper.model;
 /**
  * 节点枚举类型
  * 
- * @author zhangjun
+ * created by zw
  *
  */
 public enum CreateMode {

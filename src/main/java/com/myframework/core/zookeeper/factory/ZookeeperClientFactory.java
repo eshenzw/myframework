@@ -25,7 +25,7 @@ import com.alibaba.fastjson.JSON;
  * zookeeper注册工厂类
  * 
  * 
- * @author zhangjun
+ * created by zw
  *
  */
 public class ZookeeperClientFactory implements FactoryBean<CuratorFramework>, InitializingBean, DisposableBean {

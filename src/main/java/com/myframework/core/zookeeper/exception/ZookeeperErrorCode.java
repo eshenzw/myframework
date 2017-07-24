@@ -7,7 +7,7 @@ import com.myframework.core.error.exception.internel.ErrorCodeLoader;
 /**
  * 
  * zookeeper 异常
- * @author zhangjun
+ * created by zw
  *
  */
 public enum ZookeeperErrorCode implements ErrorCode {

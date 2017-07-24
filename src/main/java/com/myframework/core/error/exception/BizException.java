@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * 业务通用异常
  *
- * @author zhangjun
+ * created by zw
  */
 public class BizException extends RuntimeException {
 

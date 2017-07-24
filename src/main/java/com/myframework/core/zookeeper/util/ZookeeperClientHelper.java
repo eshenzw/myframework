@@ -15,7 +15,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 /**
  * 
- * @author zhangjun
+ * created by zw
  *
  */
 public class ZookeeperClientHelper implements InitializingBean {

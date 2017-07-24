@@ -16,7 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * 读取配置文件，加载message和code的映射关系
  * 
- * @author zhangjun
+ * created by zw
  *
  */
 public class ErrorCodeLoader implements InitializingBean{
