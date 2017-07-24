@@ -10,7 +10,7 @@ import com.myframework.core.alarm.event.ServiceAccessEvent;
 /**
  *   service access event：所有的服务访问事件
  *
- * Created by zhangjun.
+ * Created by zw.
  */
 public class ServiceAccessEventHandler extends AbstractEventHandler<ServiceAccessEvent> {
 

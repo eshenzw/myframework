@@ -9,7 +9,7 @@ import com.myframework.core.alarm.EventTypeEnum;
  *
  * 通用的事件
  *
- * Created by zhangjun.
+ * Created by zw.
  */
 public abstract class CommonEvent extends ApplicationEvent {
 

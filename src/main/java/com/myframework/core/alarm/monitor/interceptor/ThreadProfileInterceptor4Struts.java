@@ -1,3 +1,4 @@
+/*
 package com.myframework.core.alarm.monitor.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,18 +11,22 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 
 
+*/
 /**
  * strtus框架使用此 interceptor
  * 
  * 服务的interceptor，用来做慢的服务调用统计
  * created by zw
  *
- */
+ *//*
+
 public class ThreadProfileInterceptor4Struts extends AbstractThreadProfileInterceptor implements Interceptor{
 
-	/**
+	*/
+/**
 	 * 
-	 */
+	 *//*
+
 	private static final long serialVersionUID = 3002142764420174465L;
 
 	@Override
@@ -56,4 +61,4 @@ public class ThreadProfileInterceptor4Struts extends AbstractThreadProfileInterc
 	}
 
 	
-}
+}*/

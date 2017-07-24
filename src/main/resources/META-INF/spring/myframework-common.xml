@@ -33,4 +33,17 @@ errorcode<?xml version="1.0" encoding="UTF-8"?>
         <property name="bizErrorMap" ref="errorMap"/>
     </bean>
 
+    <!-- rest template -->
+    <bean id="common-httpClient" class="com.myframework.core.common.utils.HttpClientsFactory">
+        <property name="connectionRequestTimeout" value="${httpcomponents.connectReqTimeout:6000}"/>
+        <property name="socketTimeout" value="${httpcomponents.socketTimeout:6000}"/>
+        <property name="connectionTimeout" value="${httpcomponents.connectTimeout:6000}"/>
+        <property name="maxTotal" value="${httpcomponents.maxTotal:200}"/>
+        <property name="defaultMaxPerRoute" value="${httpcomponents.defaultMaxPerRoute:100}"/>
+    </bean>
+
+    <bean id = "httpClientUtils" class = "com.myframework.core.common.utils.HttpClientUtils">
+        <property name="closeableHttpClient" ref="common-httpClient"/>
+    </bean>
+
 </beans>
