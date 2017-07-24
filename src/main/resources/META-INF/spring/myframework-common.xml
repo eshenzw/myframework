@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+errorcode<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
@@ -16,5 +16,21 @@
     </bean>
 
     <bean name="springContextUtil" class="com.myframework.util.SpringContextUtil"></bean>
+
+    <!--  错误码 -->
+    <bean id="errorMap" class="com.myframework.core.error.exception.internel.yml.MyYamlMapFactoryBean">
+        <property name="resources">
+            <list>
+                <value>classpath*:META-INF/errorcode/system-error-base.yml</value>
+                <value>classpath*:META-INF/errorcode/service-error-*.yml</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <!--文件加载错误信息-->
+    <bean id="errorCodeLoader" class="com.myframework.core.error.exception.internel.ErrorCodeLoader" >
+        <property name="bizErrorMap" ref="errorMap"/>
+    </bean>
 
 </beans>
