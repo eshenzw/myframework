@@ -1,4 +1,4 @@
-errorcode<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
@@ -34,7 +34,7 @@ errorcode<?xml version="1.0" encoding="UTF-8"?>
     </bean>
 
     <!-- rest template -->
-    <bean id="common-httpClient" class="com.myframework.core.common.utils.HttpClientsFactory">
+    <bean id="commonhttpClient" class="com.myframework.core.common.utils.HttpClientsFactory">
         <property name="connectionRequestTimeout" value="${httpcomponents.connectReqTimeout:6000}"/>
         <property name="socketTimeout" value="${httpcomponents.socketTimeout:6000}"/>
         <property name="connectionTimeout" value="${httpcomponents.connectTimeout:6000}"/>
@@ -43,7 +43,7 @@ errorcode<?xml version="1.0" encoding="UTF-8"?>
     </bean>
 
     <bean id = "httpClientUtils" class = "com.myframework.core.common.utils.HttpClientUtils">
-        <property name="closeableHttpClient" ref="common-httpClient"/>
+        <property name="closeableHttpClient" ref="commonhttpClient"/>
     </bean>
 
 </beans>
