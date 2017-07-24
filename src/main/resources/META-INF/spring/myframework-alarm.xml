@@ -62,8 +62,8 @@
          <property name="alarmExcludeHandler" ref="alarmExcludeHandler"/>
     </bean> 
     
-    <bean id="strutsThreadProfileInterceptor" class="com.myframework.core.alarm.monitor.interceptor.ThreadProfileInterceptor4Struts" parent="abstractThreadProfileInterceptor">
-    </bean>
+    <!--<bean id="strutsThreadProfileInterceptor" class="com.myframework.core.alarm.monitor.interceptor.ThreadProfileInterceptor4Struts" parent="abstractThreadProfileInterceptor">
+    </bean>-->
     
     
     <bean id="springMvcThreadProfileInterceptor" class="com.myframework.core.alarm.monitor.interceptor.ThreadProfileInterceptor4SpringMvc" parent="abstractThreadProfileInterceptor">
