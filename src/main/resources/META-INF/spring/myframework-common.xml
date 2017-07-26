@@ -9,7 +9,7 @@
         <property name="locations">
             <list>
                 <!-- 这里支持多种寻址方式：classpath和file -->
-                <value>classpath:config/myframework.properties</value>
+                <value>classpath*:**myframework.properties</value>
             </list>
         </property>
         <property name="fileEncoding" value="UTF-8"/>

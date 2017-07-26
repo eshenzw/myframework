@@ -33,6 +33,7 @@
         <jstl-version>1.2</jstl-version>
         <taglibs-version>1.1.2</taglibs-version>
         <freemarker-version>2.3.23</freemarker-version>
+        <quartz-version>2.2.3</quartz-version>
     </properties>
     <dependencies>
         <dependency>
@@ -221,11 +222,15 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>quartz</groupId>
+            <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>1.5.2</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <version>${quartz-version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>c3p0</artifactId>
+                    <groupId>c3p0</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <dependency>

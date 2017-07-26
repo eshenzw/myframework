@@ -1,10 +1,13 @@
 package com.myframework.core.db.multi;
 
+import com.alibaba.druid.filter.stat.StatFilter;
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.wall.WallFilter;
 import com.myframework.constant.Constants;
 import com.myframework.core.db.DBInfo;
 import com.myframework.util.DesUtils;
 import com.myframework.util.PropertiesUtil;
+import com.myframework.util.SpringContextUtil;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -87,5 +90,14 @@ public class DataSourceFactory {
         ds.setTestOnBorrow(true);
         ds.setTestOnReturn(false);
         ds.setTestWhileIdle(false);
+
+        StatFilter statfilter = SpringContextUtil.getBean(StatFilter.class);
+        if(statfilter != null){
+            ds.getProxyFilters().add(statfilter);
+        }
+        WallFilter wallFilter = SpringContextUtil.getBean(WallFilter.class);
+        if(wallFilter != null){
+            ds.getProxyFilters().add(wallFilter);
+        }
     }
 }
