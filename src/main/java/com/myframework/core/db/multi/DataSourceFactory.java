@@ -8,6 +8,8 @@ import com.myframework.core.db.DBInfo;
 import com.myframework.util.DesUtils;
 import com.myframework.util.PropertiesUtil;
 import com.myframework.util.SpringContextUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ import java.util.List;
  * Created by zw
  */
 public class DataSourceFactory {
+
+    private final static Logger logger = LoggerFactory.getLogger(DataSourceFactory.class);
 
     public static final String MASTER_DB_KEY = "MASTER";
     public static final String DB_UN_KNOWN = "UN_KNOWN";
@@ -91,12 +95,23 @@ public class DataSourceFactory {
         ds.setTestOnReturn(false);
         ds.setTestWhileIdle(false);
 
-        StatFilter statfilter = SpringContextUtil.getBean(StatFilter.class);
-        if(statfilter != null){
+        StatFilter statfilter = null;
+        try {
+            statfilter = SpringContextUtil.getBean(StatFilter.class);
+        } catch (Exception e) {
+            logger.warn("没有启用druid statFilter.");
+        }
+        if (statfilter != null) {
+            ds.setUseGlobalDataSourceStat(true);
             ds.getProxyFilters().add(statfilter);
         }
-        WallFilter wallFilter = SpringContextUtil.getBean(WallFilter.class);
-        if(wallFilter != null){
+        WallFilter wallFilter = null;
+        try {
+            wallFilter = SpringContextUtil.getBean(WallFilter.class);
+        } catch (Exception e1) {
+            logger.warn("没有启用druid wallFilter.");
+        }
+        if (wallFilter != null) {
             ds.getProxyFilters().add(wallFilter);
         }
     }
