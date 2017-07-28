@@ -13,22 +13,27 @@ public class DataSourceHolder {
     private static final ThreadLocal<String> dbKeyLocal = new ThreadLocal<String>();
     private static final ThreadLocal<Boolean> isMasteLocal = new ThreadLocal<Boolean>();
     private static final ThreadLocal<Boolean> isForceCloseLocal = new ThreadLocal<Boolean>();
+    private static final ThreadLocal<String> forceDbKeyLocal = new ThreadLocal<String>();
     private static final ThreadLocal<Boolean> transactionLocal = new ThreadLocal<Boolean>();
 
     public static String getDbKey() {
         String dbKey = null;
-        HttpServletRequest request = RequestFilter.getRequest();
-        if (request != null) {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                dbKey = (String) session.getAttribute(SESSION_DB_KEY);
+        if (dbKey == null && forceDbKeyLocal.get() != null) {
+            dbKey = forceDbKeyLocal.get();
+        } else {
+            HttpServletRequest request = RequestFilter.getRequest();
+            if (request != null) {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    dbKey = (String) session.getAttribute(SESSION_DB_KEY);
+                }
             }
-        }
-        if (dbKey == null && dbKeyLocal.get() != null) {
-            dbKey = dbKeyLocal.get();
-        }
-        if (dbKey == null) {
-            dbKey = DataSourceFactory.MASTER_DB_KEY;
+            if (dbKey == null && dbKeyLocal.get() != null) {
+                dbKey = dbKeyLocal.get();
+            }
+            if (dbKey == null) {
+                dbKey = DataSourceFactory.MASTER_DB_KEY;
+            }
         }
         return dbKey;
     }
@@ -47,6 +52,7 @@ public class DataSourceHolder {
         dbKeyLocal.remove();
         isMasteLocal.remove();
         isForceCloseLocal.remove();
+        forceDbKeyLocal.remove();
         transactionLocal.remove();
     }
 
@@ -70,6 +76,10 @@ public class DataSourceHolder {
         isForceCloseLocal.set(flag);
     }
 
+    public static void setForceDbKey(String dbKey) {
+        forceDbKeyLocal.set(dbKey);
+    }
+
     public static void setTransaction(Boolean flag) {
         transactionLocal.set(flag);
     }
@@ -84,6 +94,10 @@ public class DataSourceHolder {
 
     public static void removeForceClose() {
         isForceCloseLocal.remove();
+    }
+
+    public static void removeForceDbKey() {
+        forceDbKeyLocal.remove();
     }
 
     public static void removeTransaction() {

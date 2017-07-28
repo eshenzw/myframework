@@ -19,12 +19,16 @@ public class AnnotationInterceptor implements MethodInterceptor {
 
         ForceMaster forceMaster = methodInvocation.getMethod().getAnnotation(ForceMaster.class);
         ForceClose forceClose = methodInvocation.getMethod().getAnnotation(ForceClose.class);
+        ForceDbKey forceDbKey = methodInvocation.getMethod().getAnnotation(ForceDbKey.class);
         Transactional transactional = methodInvocation.getMethod().getAnnotation(Transactional.class);
         if (forceMaster != null && forceMaster.value()) {
             DataSourceHolder.setMaster(true);
         }
         if (forceClose != null && forceClose.value()) {
             DataSourceHolder.setForceClose(true);
+        }
+        if (forceDbKey != null && forceDbKey.value() != null) {
+            DataSourceHolder.setForceDbKey(forceDbKey.value());
         }
         if (transactional != null && (transactional.propagation() == Propagation.REQUIRED || transactional.propagation() == Propagation.REQUIRES_NEW)) {
             DataSourceHolder.setTransaction(true);
@@ -37,6 +41,9 @@ public class AnnotationInterceptor implements MethodInterceptor {
             }
             if (forceClose != null) {
                 DataSourceHolder.removeForceClose();
+            }
+            if (forceDbKey != null) {
+                DataSourceHolder.removeForceDbKey();
             }
             if (transactional != null && (transactional.propagation() == Propagation.REQUIRED || transactional.propagation() == Propagation.REQUIRES_NEW)) {
                 DataSourceHolder.removeTransaction();
