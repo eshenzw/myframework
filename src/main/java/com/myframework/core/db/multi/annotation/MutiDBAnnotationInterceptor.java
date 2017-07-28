@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Aspect
 @Component
-public class AnnotationInterceptor implements MethodInterceptor {
+public class MutiDBAnnotationInterceptor implements MethodInterceptor {
     @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
 

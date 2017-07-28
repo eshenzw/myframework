@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 
     <bean id="propertyConfigurer"
@@ -45,5 +49,17 @@
     <bean id = "httpClientUtils" class = "com.myframework.core.common.utils.HttpClientUtils">
         <property name="closeableHttpClient" ref="commonhttpClient"/>
     </bean>
+
+    <!-- 多数据源注解 -->
+    <bean id="mutiDBAnnotationInterceptor" class="com.myframework.core.db.multi.annotation.MutiDBAnnotationInterceptor">
+    </bean>
+
+    <aop:config>
+        <aop:pointcut id="forceReleaseAnnotationPoint"
+                      expression="@annotation(com.myframework.core.db.multi.annotation.ForceDbKey) or
+                                  @annotation(com.myframework.core.db.multi.annotation.ForceMaster) or
+                                  @annotation(com.myframework.core.db.multi.annotation.ForceClose)"/>
+        <aop:advisor pointcut-ref="forceReleaseAnnotationPoint" advice-ref="mutiDBAnnotationInterceptor"/>
+    </aop:config>
 
 </beans>
