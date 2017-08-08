@@ -3,17 +3,19 @@
  */
 package com.myframework.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 
 @SuppressWarnings("unchecked")
 public class MyToolsUtil {
 
-	static Logger log = Logger.getLogger(MyToolsUtil.class);
+	static Logger log = LoggerFactory.getLogger(MyToolsUtil.class);
 	
 	/**
 	 * 从对象中取属性
