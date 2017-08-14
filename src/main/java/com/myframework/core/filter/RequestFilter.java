@@ -1,5 +1,6 @@
 package com.myframework.core.filter;
 
+import com.myframework.core.common.utils.LocalhostIpFetcher;
 import com.myframework.core.db.multi.DataSourceHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +34,8 @@ public class RequestFilter implements Filter {
     private static final ThreadLocal<HttpServletResponse> responseLocal = new ThreadLocal<HttpServletResponse>();
     /***/
     private static final ThreadLocal<String> currentToken = new ThreadLocal<String>();
+    /*本机网卡ip*/
+    private static String localIp = LocalhostIpFetcher.fetchLocalIP();
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) {
@@ -241,6 +244,15 @@ public class RequestFilter implements Filter {
             result = result.substring(0, result.length() - 1);
         }
         return result;
+    }
+
+    /**
+     * 获取本机IP地址
+     *
+     * @return 本机IP地址
+     */
+    public static String getLocalIp() {
+        return localIp;
     }
 
     /**
