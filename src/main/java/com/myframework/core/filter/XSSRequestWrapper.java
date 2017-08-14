@@ -1,10 +1,10 @@
 package com.myframework.core.filter;
 
-import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -45,15 +45,28 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public Map<String, String[]> getParameterMap() {
-        HashMap<String, String[]> paramMap = (HashMap<String, String[]>) super.getParameterMap();
-
-        for (Iterator<Entry<String, String[]>> iterator = paramMap.entrySet().iterator(); iterator.hasNext(); ) {
-            Entry<String, String[]> entry = iterator.next();
-            String[] values = entry.getValue();
-            for (int i = 0; i < values.length; i++) {
-                values[i] = stripXSS(values[i]);
+        Map<String, String[]> paramMap = super.getParameterMap();
+        Method method= null;
+        try {
+            method = paramMap.getClass().getMethod("setLocked",new Class[]{boolean.class});
+            if(method != null){
+                method.invoke(paramMap,new Object[]{new Boolean(false)});
             }
-            entry.setValue(values);
+            for (Iterator<Entry<String, String[]>> iterator = paramMap.entrySet().iterator(); iterator.hasNext(); ) {
+                Entry<String, String[]> entry = iterator.next();
+                String[] values = entry.getValue();
+                for (int i = 0; i < values.length; i++) {
+                    values[i] = stripXSS(values[i]);
+                }
+                //entry.setValue(values);
+                paramMap.put(entry.getKey(), values);
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
         return paramMap;
 
