@@ -4,6 +4,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 目的是实现真正意义上的细粒度锁。每个哈希值不同的对象都能获得自己独立的锁。
+ * 在测试中，在被锁住的代码执行速度飞快的情况下，效率比分段锁慢 30% 左右。如果有长耗时操作，感觉表现应该会更好
+ * @param <T>
+ */
 public class HashLock<T> {
 	private boolean isFair = false;
 	private final SegmentLock<T> segmentLock = new SegmentLock<>();// 分段锁

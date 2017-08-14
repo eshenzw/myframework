@@ -5,7 +5,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * 分段锁，系统提供一定数量的原始锁，根据传入对象的哈希值获取对应的锁并加锁 注意：要锁的对象的哈希值如果发生改变，有可能导致锁无法成功释放!!!
+ * 分段锁，系统提供一定数量的原始锁，根据传入对象的哈希值获取对应的锁并加锁
+ * 注意：要锁的对象的哈希值如果发生改变，有可能导致锁无法成功释放!!!
  */
 public class SegmentLock<T> {
 
