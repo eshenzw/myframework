@@ -7,12 +7,16 @@ import java.util.Date;
  * 基础的Entity类主要实现ID.
  * Created by Administrator on 2016/8/21.
  */
-public class BaseEntity implements IdEntity,Serializable {
+public class BaseEntity implements IdEntity, Serializable {
 
-    /** 序列标识. */
+    /**
+     * 序列标识.
+     */
     protected static final long serialVersionUID = 119185790113566379L;
 
-    /** 实体标识. */
+    /**
+     * 实体标识.
+     */
     private Long id;
 
     @Override
@@ -33,7 +37,7 @@ public class BaseEntity implements IdEntity,Serializable {
     /**
      * creator_id
      */
-    private Long createId;
+    private Long creatorId;
 
     /**
      * create_time
@@ -41,13 +45,13 @@ public class BaseEntity implements IdEntity,Serializable {
     private Date createTime;
 
     /**
-     * modifyier_id
+     * updator_id
      */
-    private Long updateId;
+    private Long updatorId;
 
     /**
      * bas_pd_dic.modify_time
-     *
+     * <p>
      * Tue Jul 21 15:19:56 CST 2015
      */
     private Date updateTime;
@@ -60,12 +64,12 @@ public class BaseEntity implements IdEntity,Serializable {
         this.status = status;
     }
 
-    public Long getCreateId() {
-        return createId;
+    public Long getCreatorId() {
+        return creatorId;
     }
 
-    public void setCreateId(Long createId) {
-        this.createId = createId;
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
     }
 
     public Date getCreateTime() {
@@ -76,12 +80,12 @@ public class BaseEntity implements IdEntity,Serializable {
         this.createTime = createTime;
     }
 
-    public Long getUpdateId() {
-        return updateId;
+    public Long getUpdatorId() {
+        return updatorId;
     }
 
-    public void setUpdateId(Long updateId) {
-        this.updateId = updateId;
+    public void setUpdatorId(Long updatorId) {
+        this.updatorId = updatorId;
     }
 
     public Date getUpdateTime() {
