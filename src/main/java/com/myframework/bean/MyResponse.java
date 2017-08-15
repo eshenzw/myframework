@@ -14,13 +14,13 @@ public class MyResponse extends HashMap<String, Object> {
     /**
      * 默认错误码
      */
-    public static final int CODE_FAIL_DEFAULT = 0;
-    public static final int CODE_SUCCESS = 200;
-    public static final int CODE_UNKNOWN = 500;
+    public static final Integer CODE_FAIL_DEFAULT = 0;
+    public static final Integer CODE_SUCCESS = 200;
+    public static final Integer CODE_UNKNOWN = 500;
 
     private MyResponse(int code, Object data, String message) {
         this.put("code", code);
-        this.put("success", CODE_SUCCESS == code);
+        this.put("success", CODE_SUCCESS.equals(code));
         this.put("message", message);
         this.put("data", data);
     }
@@ -39,7 +39,7 @@ public class MyResponse extends HashMap<String, Object> {
     }
 
     public boolean isSuccess() {
-        return CODE_SUCCESS == this.get("code");
+        return CODE_SUCCESS.equals(this.get("code"));
     }
 
     public String getCode() {
