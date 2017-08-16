@@ -24,8 +24,8 @@
         <druid-version>1.0.28</druid-version>
         <mysql-version>5.1.38</mysql-version>
         <!-- 日志文件管理包版本 -->
-        <slf4j.version>1.7.12</slf4j.version>
-        <logback.version>1.0.9</logback.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <logback.version>1.2.3</logback.version>
 
         <kaptcha-version>0.0.9</kaptcha-version>
         <velocity-version>1.7</velocity-version>

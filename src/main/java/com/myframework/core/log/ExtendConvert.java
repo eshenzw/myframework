@@ -13,9 +13,11 @@ public class ExtendConvert extends ClassicConverter {
     @Override
     public String convert(ILoggingEvent event) {
         String userInfo = "-1";
-        Long userId = (Long) RequestFilter.getSession().getAttribute(BaseUserEntity.USER_SESSION_ID);
-        if (userId != null) {
-            userInfo = userId.toString();
+        if (RequestFilter.getSession() != null) {
+            Long userId = (Long) RequestFilter.getSession().getAttribute(BaseUserEntity.USER_SESSION_ID);
+            if (userId != null) {
+                userInfo = userId.toString();
+            }
         }
         return userInfo;
     }

@@ -21,7 +21,9 @@ public class MyEvent implements Serializable {
         if (name == null)
             throw new IllegalArgumentException("事件名称不得为空");
         this.name = name;
-        this.dbKey = (String) RequestFilter.getSession().getAttribute(DataSourceHolder.SESSION_DB_KEY);
+        if (RequestFilter.getSession() != null) {
+            this.dbKey = (String) RequestFilter.getSession().getAttribute(DataSourceHolder.SESSION_DB_KEY);
+        }
     }
 
     public MyEvent(String name, Serializable data) {
@@ -29,7 +31,9 @@ public class MyEvent implements Serializable {
             throw new IllegalArgumentException("事件名称不得为空");
         this.name = name;
         this.data = data;
-        this.dbKey = (String) RequestFilter.getSession().getAttribute(DataSourceHolder.SESSION_DB_KEY);
+        if (RequestFilter.getSession() != null) {
+            this.dbKey = (String) RequestFilter.getSession().getAttribute(DataSourceHolder.SESSION_DB_KEY);
+        }
     }
 
     public String toString() {

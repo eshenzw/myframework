@@ -51,7 +51,7 @@ public class MyMulticaster {
      */
     public static void multicastEvent(final MyEvent event) {
         Collection<IMyEventListener> listeners = getListeners(event);
-        if (event.getDbKey() == null) {
+        if (event.getDbKey() == null && RequestFilter.getSession() != null) {
             String dbKey = (String) RequestFilter.getSession().getAttribute(DataSourceHolder.SESSION_DB_KEY);
             event.setDbKey(dbKey);
         }

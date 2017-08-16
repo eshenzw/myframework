@@ -81,7 +81,8 @@ public class RequestFilter implements Filter {
     public static HttpServletRequest getRequest() {
         HttpServletRequest request = requestLocal.get();
         if (request == null) {
-            log.warn("request在线程内没有找到,可能原因：1、当前调用没有处在web容器内；2、web.xml没有配置RequestFilter过滤器；");
+            //注释掉否则有大量的日志积压
+            //log.warn("request在线程内没有找到,可能原因：1、当前调用没有处在web容器内；2、web.xml没有配置RequestFilter过滤器；");
         }
         return request;
     }
@@ -94,7 +95,8 @@ public class RequestFilter implements Filter {
     public static HttpServletResponse getResponse() {
         HttpServletResponse response = responseLocal.get();
         if (response == null) {
-            log.warn("response在线程内没有找到,可能原因：1、当前调用没有处在web容器内；2、web.xml没有配置RequestFilter过滤器；");
+            //注释掉否则有大量的日志积压
+            //log.warn("response在线程内没有找到,可能原因：1、当前调用没有处在web容器内；2、web.xml没有配置RequestFilter过滤器；");
         }
         return response;
     }
@@ -107,7 +109,9 @@ public class RequestFilter implements Filter {
     public static HttpSession getSession() {
         HttpServletRequest request = requestLocal.get();
         if (request == null) {
-            log.warn("session在线程内没有找到,可能原因：1、当前调用没有处在web容器内；2、web.xml没有配置RequestFilter过滤器；");
+            //注释掉否则有大量的日志积压
+            //log.warn("session在线程内没有找到,可能原因：1、当前调用没有处在web容器内；2、web.xml没有配置RequestFilter过滤器；");
+            return null;
         }
         return request.getSession();
     }
