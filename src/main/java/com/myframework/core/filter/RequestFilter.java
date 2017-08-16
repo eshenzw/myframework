@@ -41,7 +41,8 @@ public class RequestFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) {
         try {
             if (log.isDebugEnabled()) {
-                log.debug("enter RequestFilter doFilter");
+                //注释掉否则有大量的日志积压
+                //log.debug("enter RequestFilter doFilter");
             }
             String path = request.getServletContext().getContextPath();
             String host = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
