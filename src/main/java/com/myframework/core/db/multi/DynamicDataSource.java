@@ -24,7 +24,7 @@ public class DynamicDataSource extends DelegatingDataSource {
     public DataSource getTargetDataSource() {
         DataSource ds = MutiDataSourceRouter.getCurrentDataSource();
 
-        logger.debug("DynamicDataSource getTargetDataSource：" + ds.toString());
+        logger.debug("DynamicDataSource getTargetDataSource Key：" + DataSourceHolder.getDbKey());
 
         return ds;
     }
