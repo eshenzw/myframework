@@ -46,11 +46,15 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public Map<String, String[]> getParameterMap() {
         Map<String, String[]> paramMap = super.getParameterMap();
-        Method method= null;
+        Method method = null;
+        Method method1 = null;
+        boolean isLocked = false;
         try {
-            method = paramMap.getClass().getMethod("setLocked",new Class[]{boolean.class});
-            if(method != null){
-                method.invoke(paramMap,new Object[]{new Boolean(false)});
+            method = paramMap.getClass().getMethod("setLocked", new Class[]{boolean.class});
+            method1 = paramMap.getClass().getMethod("isLocked");
+            if (method != null && method1 != null) {
+                isLocked = (boolean) method1.invoke(paramMap);
+                method.invoke(paramMap, new Object[]{new Boolean(false)});
             }
             for (Iterator<Entry<String, String[]>> iterator = paramMap.entrySet().iterator(); iterator.hasNext(); ) {
                 Entry<String, String[]> entry = iterator.next();
@@ -67,6 +71,16 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
+        } finally {
+            if (method != null && method1 != null) {
+                try {
+                    method.invoke(paramMap, new Object[]{new Boolean(isLocked)});
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return paramMap;
 
