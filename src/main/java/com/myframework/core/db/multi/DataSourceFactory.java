@@ -22,6 +22,16 @@ public class DataSourceFactory {
 
     private final static Logger logger = LoggerFactory.getLogger(DataSourceFactory.class);
 
+    private static DesUtils desUtils = null;
+
+    static {
+        try {
+            desUtils = new DesUtils();
+        } catch (Exception e) {
+            logger.error("加解密工具初始化失败", e);
+        }
+    }
+
     public static final String MASTER_DB_KEY = "MASTER";
     public static final String DB_UN_KNOWN = "UN_KNOWN";
 
@@ -31,10 +41,8 @@ public class DataSourceFactory {
         ds.setDriverClassName(PropertiesUtil.getProp(Constants.JDBC_FILE_PATH, "db.driver"));
         ds.setUrl(PropertiesUtil.getProp(Constants.JDBC_FILE_PATH, "db.url"));
         ds.setUsername(PropertiesUtil.getProp(Constants.JDBC_FILE_PATH, "db.user"));
-        DesUtils des = null;// 自定义密钥
         try {
-            des = new DesUtils();
-            ds.setPassword(des.decrypt(PropertiesUtil.getProp(Constants.JDBC_FILE_PATH, "db.password")));
+            ds.setPassword(desUtils.decrypt(PropertiesUtil.getProp(Constants.JDBC_FILE_PATH, "db.password")));
         } catch (Exception e) {
             System.out.println("初始化主数据库解密失败:" + e.getMessage());
             e.printStackTrace();
@@ -67,10 +75,8 @@ public class DataSourceFactory {
         dbInfo.setDbDirver(PropertiesUtil.getProp(Constants.JDBC_FILE_PATH, String.format("%s.db.driver", dbKey)));
         dbInfo.setDbUrl(PropertiesUtil.getProp(Constants.JDBC_FILE_PATH, String.format("%s.db.url", dbKey)));
         dbInfo.setDbUsername(PropertiesUtil.getProp(Constants.JDBC_FILE_PATH, String.format("%s.db.user", dbKey)));
-        DesUtils des = null;
         try {
-            des = new DesUtils();
-            dbInfo.setDbPassword(des.decrypt(PropertiesUtil.getProp(Constants.JDBC_FILE_PATH, String.format("%s.db.password", dbKey))));
+            dbInfo.setDbPassword(desUtils.decrypt(PropertiesUtil.getProp(Constants.JDBC_FILE_PATH, String.format("%s.db.password", dbKey))));
         } catch (Exception e) {
             System.out.println("初始化数据库解密失败:" + e.getMessage());
             e.printStackTrace();
