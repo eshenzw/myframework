@@ -111,7 +111,7 @@ public class TokenManager {
      */
     public static void checkSessionExist(String token) throws TokenException {
 
-        Object obj = RequestFilter.getSession().getAttribute(TokenConstant.SESSION_REFER_TOKEN);
+        String obj = getJwtTokenUtil().getTokenFromSession(token);
 
         if (obj == null) {
             throw new TokenException(TokenCode.IEAGLLE_TOKEN_4_SESSION_EXPIRE.getCode());
