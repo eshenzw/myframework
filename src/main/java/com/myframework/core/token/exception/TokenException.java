@@ -10,6 +10,10 @@ public class TokenException extends Exception {
         super();
     }
 
+    public TokenException(int code) {
+        super(String.valueOf(code));
+    }
+
     public TokenException(String message) {
         super(message);
     }

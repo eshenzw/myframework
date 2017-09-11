@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Created by zw on 2017/9/11.
  */
-public class JwtTokenInfo {
+public class JwtSubjectInfo {
     private String uid;
     private String username;
     private Device device;

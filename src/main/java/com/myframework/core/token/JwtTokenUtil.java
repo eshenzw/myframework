@@ -1,9 +1,11 @@
 package com.myframework.core.token;
 
 import com.myframework.core.filter.RequestFilter;
+import com.myframework.core.token.exception.TokenException;
 import com.myframework.util.CookieUtil;
 import com.myframework.util.StringUtil;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.mobile.device.Device;
@@ -17,17 +19,22 @@ public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = -3301605591108950415L;
 
+    /*是否启用token*/
     public boolean tokenEnable;
-
+    /*token header头*/
     private String tokenHeader;
-
+    /*token 前缀*/
     private String tokenPrefix;
-
+    /*token加密秘钥*/
     private String secret;
-
+    /*token过期时间(单位：s)*/
     private Long expiration;
-
+    /*token过期后允许refresh Token的保护期(单位：s)*/
+    private Long expirationProtectTime;
+    /*验证失败重定向地址*/
     private String redirectUrl;
+    /*刷新token的过期时间(单位：s)*/
+    private Long refreshTokenExpiration;
 
     public String getUsernameFromToken(String token) {
         String username;
@@ -123,7 +130,12 @@ public class JwtTokenUtil implements Serializable {
         return (TokenConstant.AUDIENCE_TABLET.equals(audience) || TokenConstant.AUDIENCE_MOBILE.equals(audience));
     }
 
-    public String generateToken(JwtTokenInfo tokenInfo) {
+    private Boolean inTokenExpirationProtectTime(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return new Date().before(new Date(expiration.getTime() + expirationProtectTime * 1000));
+    }
+
+    public JwtInfo generateToken(JwtSubjectInfo tokenInfo) {
         Map<String, Object> claims = new HashMap<>();
 
         claims.put(TokenConstant.CLAIM_KEY_USERNAME, tokenInfo.getUsername());
@@ -136,7 +148,7 @@ public class JwtTokenUtil implements Serializable {
         return doGenerateToken(tokenInfo.getUid(), claims);
     }
 
-    private String doGenerateToken(String subject, Map<String, Object> claims) {
+    private JwtInfo doGenerateToken(String subject, Map<String, Object> claims) {
         final Date createdDate = (Date) claims.get(TokenConstant.CLAIM_KEY_CREATED);
         final Date expirationDate = new Date(createdDate.getTime() + expiration * 1000);
 
@@ -149,6 +161,14 @@ public class JwtTokenUtil implements Serializable {
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
+        JwtInfo jwtInfo = new JwtInfo();
+        jwtInfo.setToken(token);
+        jwtInfo.setCreatedTime(createdDate.getTime());
+        jwtInfo.setExpireTime(expirationDate.getTime());
+        // 把当前token放到session中去
+        if (RequestFilter.getSession() != null) {
+            RequestFilter.getSession().setAttribute(TokenConstant.SESSION_REFER_TOKEN, token);
+        }
         if (getTokenPrefix() != null) {
             token = new StringBuilder(getTokenPrefix()).append(" ").append(token).toString();
         }
@@ -156,34 +176,62 @@ public class JwtTokenUtil implements Serializable {
         if (RequestFilter.getRequest() != null && RequestFilter.getResponse() != null) {
             CookieUtil.setCookie(getTokenHeader(), token, getExpiration().intValue(), RequestFilter.getRequest(), RequestFilter.getResponse());
         }
-        return token;
+        return jwtInfo;
     }
 
     public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
         final Date created = getCreatedDateFromToken(token);
         return !isCreatedBeforeLastPasswordReset(created, lastPasswordReset)
-                && (!isTokenExpired(token) || ignoreTokenExpiration(token));
+                && (!isTokenExpired(token) || inTokenExpirationProtectTime(token));
     }
 
-    public String refreshToken(String token) {
-        String refreshedToken;
-        try {
-            final Claims claims = getClaimsFromToken(token);
-            claims.put(TokenConstant.CLAIM_KEY_CREATED, new Date());
-            refreshedToken = doGenerateToken(claims.getSubject(), claims);
-        } catch (Exception e) {
-            refreshedToken = null;
+    public JwtInfo refreshToken(String token, boolean isRefresh) throws TokenException {
+        if(isTokenExpired(token)){
+            throw new TokenException("刷新token已过期");
         }
-        return refreshedToken;
+        final Claims claims = getClaimsFromToken(token);
+        Date createdDate = new Date();
+        claims.put(TokenConstant.CLAIM_KEY_CREATED, createdDate);
+        final Date expirationDate = new Date(createdDate.getTime() + (isRefresh ? refreshTokenExpiration : expiration) * 1000);
+        String newToken = Jwts.builder()
+                .setSubject(claims.getSubject())
+                .setClaims(claims)
+                .setIssuedAt(new Date())
+                .setExpiration(expirationDate)
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
+        JwtInfo jwtInfo = new JwtInfo();
+        jwtInfo.setToken(newToken);
+        jwtInfo.setCreatedTime(createdDate.getTime());
+        jwtInfo.setExpireTime(expirationDate.getTime());
+        if(isRefresh){
+            // 把当前token放到session中去
+            if (RequestFilter.getSession() != null) {
+                RequestFilter.getSession().setAttribute(TokenConstant.SESSION_REFRESH_TOKEN, newToken);
+            }
+        }else{
+            // 把当前token放到session中去
+            if (RequestFilter.getSession() != null) {
+                RequestFilter.getSession().setAttribute(TokenConstant.SESSION_REFER_TOKEN, newToken);
+            }
+            if (getTokenPrefix() != null) {
+                newToken = new StringBuilder(getTokenPrefix()).append(" ").append(newToken).toString();
+            }
+            // 把当前token放到cookie中去
+            if (RequestFilter.getRequest() != null && RequestFilter.getResponse() != null) {
+                CookieUtil.setCookie(getTokenHeader(), newToken, getExpiration().intValue(), RequestFilter.getRequest(), RequestFilter.getResponse());
+            }
+        }
+        return jwtInfo;
     }
 
-    public Boolean validateToken(String token, JwtTokenInfo tokenInfo) {
+    public Boolean validateToken(String token, JwtSubjectInfo tokenInfo) {
         final String username = getUsernameFromToken(token);
         final Date created = getCreatedDateFromToken(token);
         //final Date expiration = getExpirationDateFromToken(token);
         return (
                 username.equals(tokenInfo.getUsername())
-                        && !isTokenExpired(token)
+                        //&& !isTokenExpired(token)
                         && !isCreatedBeforeLastPasswordReset(created, tokenInfo.getLastPasswordReset()));
     }
 
@@ -233,5 +281,21 @@ public class JwtTokenUtil implements Serializable {
 
     public void setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
+    }
+
+    public Long getExpirationProtectTime() {
+        return expirationProtectTime;
+    }
+
+    public void setExpirationProtectTime(Long expirationProtectTime) {
+        this.expirationProtectTime = expirationProtectTime;
+    }
+
+    public Long getRefreshTokenExpiration() {
+        return refreshTokenExpiration;
+    }
+
+    public void setRefreshTokenExpiration(Long refreshTokenExpiration) {
+        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 }

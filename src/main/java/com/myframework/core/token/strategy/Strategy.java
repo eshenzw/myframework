@@ -1,6 +1,5 @@
 package com.myframework.core.token.strategy;
 
-import com.myframework.core.token.JwtTokenInfo;
 import com.myframework.core.token.exception.TokenException;
 
 import javax.servlet.http.HttpServletRequest;

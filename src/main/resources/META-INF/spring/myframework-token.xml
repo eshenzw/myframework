@@ -29,6 +29,9 @@
         <property name="tokenPrefix" value="${token.prefix:Bearer}"></property>
         <property name="secret" value="${token.secret:mySecret}"></property>
         <property name="expiration" value="${token.expiration:604800}"></property>
+        <property name="expirationProtectTime" value="${token.expiration.protect:10}"></property>
+        <property name="refreshTokenExpiration" value="${token.refresh.expiration:2592000}"></property>
+        <property name="redirectUrl" value="token.redirect.url:/login.html"></property>
     </bean>
 
     <bean name="tokenStrategyExecutor" class="com.myframework.core.token.strategy.TokenStrategyExecutor">

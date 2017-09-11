@@ -16,6 +16,10 @@ public class TokenConstant {
     public static final String AUDIENCE_MOBILE = "mobile";
     public static final String AUDIENCE_TABLET = "tablet";
 
+    public static final String SESSION_REFER_TOKEN = "session_refer_token";
+    public static final String SESSION_REFRESH_TOKEN = "session_refresh_token";
+    public static final String SESSION_SUBJECT_INFO = "session_subject_info";
+
     /*public static final String AUTHORIZATION = "Authorization";
     public static final String SECRET = "mySecret";
     public static final Long EXPIRATION = 604800L;*/

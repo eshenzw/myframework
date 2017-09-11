@@ -3,7 +3,6 @@ package com.myframework.core.token.strategy.impl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.myframework.core.token.JwtTokenInfo;
 import com.myframework.core.token.exception.TokenException;
 import com.myframework.core.token.TokenManager;
 import com.myframework.core.token.strategy.StrategyEnum;
@@ -23,8 +22,8 @@ public class BaseTokenStrategy extends TokenStrategy {
     public StrategyEnum vaidateToken(String token, HttpServletRequest request, HttpServletResponse reponse)
             throws TokenException {
 
-        if (TokenManager.isTokenExpired(token)) {
-            throw new TokenException("toke expired!");
+        if (!TokenManager.validateToken(token)) {
+            throw new TokenException("token validate fail!");
         }
 
         return StrategyEnum.STRATEGY_VALIDATE_SUCCESS;
