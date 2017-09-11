@@ -3,77 +3,35 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/aop
-       http://www.springframework.org/schema/aop/spring-aop.xsd
-       http://www.springframework.org/schema/security
-       http://www.springframework.org/schema/security/spring-security.xsd">
+       http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <!-- 支持spring security对Controller的方法级AOP安全控制 -->
-    <security:global-method-security pre-post-annotations="enabled"/>
-    <!--<security:global-method-security secured-annotations="enabled"/>-->
 
-    <security:http realm="Protected API"
-                   use-expressions="true"
-                   create-session="stateless"
-                   entry-point-ref="unauthorizedEntryPoint"
-                   authentication-manager-ref="authenticationManager">
+    <!-- 下面注释这段放在spring-mvc 过滤器链里里 -->
+    <!--<mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <ref bean="tokenAuthInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>-->
 
-        <!--
-        Added after moving to Spring Boot 1.3 + Spring Security 4.x,
-        otherwise we could not login with basic auth because of: Expected CSRF token not found
-        TODO: Please, mind, that I did not migrate this XML to Spring Security 4.x except for this element
-        -->
-        <security:csrf disabled="true"/>
-
-        <!--
-        This is not easily possible, because it causes:
-        DEBUG o.s.s.w.a.ExceptionTranslationFilter - Authentication exception occurred; redirecting to authentication entry point
-        org.springframework.security.authentication.AuthenticationCredentialsNotFoundException: An Authentication object was not found in the SecurityContext
-        -->
-        <!--<anonymous enabled="false"/>-->
-        <security:custom-filter ref="JwtAuthenticationTokenFilter" position="FORM_LOGIN_FILTER"/>
-
-        <security:intercept-url pattern="/*" access="permitAll"/>
-        <security:intercept-url pattern="/secure/**" access="isFullyAuthenticated()"/>
-    </security:http>
-
-    <bean id="unauthorizedEntryPoint" class="com.myframework.core.token.JwtAuthenticationEntryPoint"/>
-
-    <bean id="md5Encoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder">
-    </bean>
-
-    <security:authentication-manager id="authenticationManager">
-        <security:authentication-provider user-service-ref="defaultUserDetailsService">
-            <!--
-            Default password encoder is PlaintextPasswordEncoder, which fits with our hardcoded users.
-            Obviously not a good choice otherwise.
-            -->
-            <security:password-encoder ref="md5Encoder">
-                <security:salt-source user-property="salt"></security:salt-source>
-            </security:password-encoder>
-        </security:authentication-provider>
-    </security:authentication-manager>
-
-    <bean name="defaultUserDetailsService" class="com.myframework.core.token.DefaultUserDetailsServiceImpl">
-    </bean>
-
-    <bean name="JwtAuthenticationTokenFilter" class="com.myframework.core.token.JwtAuthenticationTokenFilter">
+    <bean name="tokenAuthInterceptor" class="com.myframework.core.token.TokenAuthInterceptor">
     </bean>
 
     <bean name="jwtTokenUtil" class="com.myframework.core.token.JwtTokenUtil">
         <property name="tokenEnable" value="${token.enable:false}"></property>
         <property name="tokenHeader" value="${token.header:Authorization}"></property>
+        <property name="tokenPrefix" value="${token.prefix:Bearer}"></property>
         <property name="secret" value="${token.secret:mySecret}"></property>
         <property name="expiration" value="${token.expiration:604800}"></property>
     </bean>
 
     <bean name="tokenStrategyExecutor" class="com.myframework.core.token.strategy.TokenStrategyExecutor">
-        <property name="userDetailsService" ref="${token.userDetailsServiceName}"></property>
         <property name="jwtTokenUtil" ref="jwtTokenUtil"></property>
     </bean>
 

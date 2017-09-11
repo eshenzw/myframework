@@ -1,6 +1,8 @@
 package com.myframework.core.token;
 
 import com.myframework.core.filter.RequestFilter;
+import com.myframework.core.token.annotation.IgnoreTokenAuth;
+import com.myframework.core.token.annotation.WithTokenAuth;
 import com.myframework.core.token.exception.TokenException;
 import com.myframework.core.token.strategy.TokenStrategyExecutor;
 import com.myframework.util.SpringContextUtil;
@@ -8,14 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -23,9 +20,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
+/**
+ * 权限(Token)验证
+ * Created by zw on 2017/9/11.
+ */
+public class TokenAuthInterceptor extends HandlerInterceptorAdapter {
 
-    private final Log logger = LogFactory.getLog(this.getClass());
+    private final Log logger = LogFactory.getLog(TokenAuthInterceptor.class);
 
     @Autowired
     private TokenStrategyExecutor tokenStrategyExecutor;
@@ -39,29 +40,40 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        try {
-            if (TokenManager.isTokenEnable()) {
-                enableTokenValidate(request, response, chain);
-            } else {
-                chain.doFilter(request, response);
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        boolean go = true;
+        if (TokenManager.isTokenEnable()) {
+            IgnoreTokenAuth ignoreTokenAuth = null;
+            WithTokenAuth withTokenAuth = null;
+            if (handler instanceof HandlerMethod) {
+                ignoreTokenAuth = ((HandlerMethod) handler).getMethodAnnotation(IgnoreTokenAuth.class);
+                withTokenAuth = ((HandlerMethod) handler).getMethodAnnotation(WithTokenAuth.class);
             }
-        } finally {
-            // 清理threadlocal
-            clearThreadLocal();
+
+            //如果有@IgnoreTokenAuth注解，则不验证token
+            if (ignoreTokenAuth == null) {
+                go = enableTokenValidate(request, response);
+            }
+
+            if (withTokenAuth != null) {
+                go = enableTokenAuth(withTokenAuth.value(), request, response);
+            }
+
+        } else {
+            go = super.preHandle(request, response, handler);
         }
+        return go;
     }
 
     /**
-     * 决定是否开启token校验，redis存储session的功能
+     * 决定是否开启token校验
      *
      * @param request
      * @param response
-     * @param chain
      * @throws ServletException
      * @throws IOException
      */
-    private void enableTokenValidate(ServletRequest request, ServletResponse response, FilterChain chain)
+    private boolean enableTokenValidate(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         try {
             // 校验token
@@ -73,19 +85,49 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             // 对异常信息做处理
             redirectTo((HttpServletRequest) request, (HttpServletResponse) response, e);
 
-            return;
+            return false;
 
         } catch (Exception e) {
             logger.error("SessionFilter token 校验失败，非预期异常,message : " + e.getMessage(), e);
             redirectTo((HttpServletRequest) request, (HttpServletResponse) response,
                     new TokenException(e, "token校验非预期异常"));
 
-            return;
+            return false;
 
         }
 
-        chain.doFilter(request, response);
+        return true;
 
+    }
+
+    /**
+     * 决定是否开启token 权限校验
+     *
+     * @param withTokenAuth
+     * @param request
+     * @param response
+     * @return
+     */
+    private boolean enableTokenAuth(String withTokenAuth, ServletRequest request, ServletResponse response) throws IOException {
+        try {
+            TokenManager.validateTokenAuth(withTokenAuth, (HttpServletRequest) request);
+        } catch (TokenException e) {
+
+            logger.info("SessionFilter token 校验失败,biz code :" + e.getCode() + ",message :" + e.getMessage(), e);
+            // 对异常信息做处理
+            redirectTo((HttpServletRequest) request, (HttpServletResponse) response, e);
+
+            return false;
+
+        } catch (Exception e) {
+            logger.error("SessionFilter token 校验失败，非预期异常,message : " + e.getMessage(), e);
+            redirectTo((HttpServletRequest) request, (HttpServletResponse) response,
+                    new TokenException(e, "token校验非预期异常"));
+
+            return false;
+
+        }
+        return true;
     }
 
     /**
@@ -115,8 +157,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         }
 
-        // 如果前面没能根据token 解析到 登录方式，下面尝试根据cookie中的值取下试试
-
         redirectTo(request, response, e, TokenConstant.AUDIENCE_UNKNOWN);
 
     }
@@ -126,7 +166,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         ITokenValidRedirect irediret = null;
         try {
             irediret = SpringContextUtil.getBean(ITokenValidRedirect.class);
-        } catch (Exception e1){
+        } catch (Exception e1) {
             logger.info("应用没有实现 ITokenValidRedirect，进行默认跳转操作 ");
         }
         if (irediret != null) {
@@ -137,19 +177,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             if (TokenConstant.AUDIENCE_WEB.equals(audience)) {
                 response.sendRedirect(RequestFilter.getBasePath() + TokenManager.getJwtTokenUtil().getRedirectUrl());
             } else if (TokenConstant.AUDIENCE_MOBILE.equals(audience)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-            } else if (TokenConstant.AUDIENCE_MOBILE.equals(audience)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Mobile Unauthorized:"+e.getMessage());
+            } else if (TokenConstant.AUDIENCE_TABLET.equals(audience)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Tablet Unauthorized:"+e.getMessage());
             } else if (TokenConstant.AUDIENCE_UNKNOWN.equals(audience)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unknown Unauthorized:"+e.getMessage());
             }
         }
-    }
-
-    /**
-     *
-     */
-    private void clearThreadLocal() {
-        RequestFilter.clearThreadLocal();
     }
 }

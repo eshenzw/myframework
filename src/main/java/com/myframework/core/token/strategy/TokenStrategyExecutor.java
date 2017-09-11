@@ -18,11 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -33,8 +28,6 @@ public class TokenStrategyExecutor implements ApplicationContextAware {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     private JwtTokenUtil jwtTokenUtil;
-
-    private UserDetailsService userDetailsService;
 
     private List<TokenStrategy> strategyList = new ArrayList<TokenStrategy>();
 
@@ -65,7 +58,7 @@ public class TokenStrategyExecutor implements ApplicationContextAware {
         String token = TokenManager.getTokenFromRequest(request);
 
         if (StringUtils.isEmpty(token)) {
-            return;
+            throw new TokenException("token不存在");
         }
 
         RequestFilter.setCurrentToken(token);
@@ -107,24 +100,11 @@ public class TokenStrategyExecutor implements ApplicationContextAware {
 
         logger.info("checking authentication für user " + username);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-            // It is not compelling necessary to load the use details from the database. You could also store the information
-            // in the token and read it from it. It's up to you ;)
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
-            // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
-            // the database compellingly. Again it's up to you ;)
-            if (TokenManager.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                logger.info("authenticated user " + userDetails.getUsername() + ", setting security context");
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+        if (username != null) {
 
             for (TokenStrategy strategy : strategyList) {
 
-                StrategyEnum result = strategy.vaidateToken(token, userDetails, request, reponse);
+                StrategyEnum result = strategy.vaidateToken(token, request, reponse);
 
                 if (result == StrategyEnum.STRATEGY_VALIDATE_SUCCESS_ADN_BREAK) {
                     break;
@@ -136,19 +116,12 @@ public class TokenStrategyExecutor implements ApplicationContextAware {
 
     }
 
-    public JwtTokenUtil getJwtTokenUtil() {
-        return jwtTokenUtil;
-    }
-
     public void setJwtTokenUtil(JwtTokenUtil jwtTokenUtil) {
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    public UserDetailsService getUserDetailsService() {
-        return userDetailsService;
+    public JwtTokenUtil getJwtTokenUtil() {
+        return jwtTokenUtil;
     }
 
-    public void setUserDetailsService(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
 }

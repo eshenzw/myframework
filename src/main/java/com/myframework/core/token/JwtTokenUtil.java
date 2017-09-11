@@ -1,10 +1,12 @@
 package com.myframework.core.token;
 
+import com.myframework.core.filter.RequestFilter;
+import com.myframework.util.CookieUtil;
+import com.myframework.util.StringUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.mobile.device.Device;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -18,6 +20,8 @@ public class JwtTokenUtil implements Serializable {
     public boolean tokenEnable;
 
     private String tokenHeader;
+
+    private String tokenPrefix;
 
     private String secret;
 
@@ -69,6 +73,17 @@ public class JwtTokenUtil implements Serializable {
         return audience;
     }
 
+    public String getGrantedAuthsFromToken(String token) {
+        String auths;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            auths = (String) claims.get(TokenConstant.CLAIM_KEY_GRANTED);
+        } catch (Exception e) {
+            auths = null;
+        }
+        return auths;
+    }
+
     private Claims getClaimsFromToken(String token) {
         Claims claims;
         try {
@@ -108,29 +123,40 @@ public class JwtTokenUtil implements Serializable {
         return (TokenConstant.AUDIENCE_TABLET.equals(audience) || TokenConstant.AUDIENCE_MOBILE.equals(audience));
     }
 
-    public String generateToken(UserDetails userDetails, Device device) {
+    public String generateToken(JwtTokenInfo tokenInfo) {
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put(TokenConstant.CLAIM_KEY_USERNAME, userDetails.getUsername());
-        claims.put(TokenConstant.CLAIM_KEY_AUDIENCE, generateAudience(device));
+        claims.put(TokenConstant.CLAIM_KEY_USERNAME, tokenInfo.getUsername());
+        claims.put(TokenConstant.CLAIM_KEY_AUDIENCE, generateAudience(tokenInfo.getDevice()));
+        claims.put(TokenConstant.CLAIM_KEY_GRANTED, StringUtil.arrayToDelimitedString(tokenInfo.getAuths().toArray(), ","));
 
         final Date createdDate = new Date();
         claims.put(TokenConstant.CLAIM_KEY_CREATED, createdDate);
 
-        return doGenerateToken(claims);
+        return doGenerateToken(tokenInfo.getUid(), claims);
     }
 
-    private String doGenerateToken(Map<String, Object> claims) {
+    private String doGenerateToken(String subject, Map<String, Object> claims) {
         final Date createdDate = (Date) claims.get(TokenConstant.CLAIM_KEY_CREATED);
         final Date expirationDate = new Date(createdDate.getTime() + expiration * 1000);
 
         System.out.println("doGenerateToken " + createdDate);
 
-        return Jwts.builder()
+        String token = Jwts.builder()
+                .setSubject(subject)
                 .setClaims(claims)
+                .setIssuedAt(new Date())
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
+        if (getTokenPrefix() != null) {
+            token = new StringBuilder(getTokenPrefix()).append(" ").append(token).toString();
+        }
+        // 把当前token放到cookie中去
+        if (RequestFilter.getRequest() != null && RequestFilter.getResponse() != null) {
+            CookieUtil.setCookie(getTokenHeader(), token, getExpiration().intValue(), RequestFilter.getRequest(), RequestFilter.getResponse());
+        }
+        return token;
     }
 
     public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
@@ -144,22 +170,21 @@ public class JwtTokenUtil implements Serializable {
         try {
             final Claims claims = getClaimsFromToken(token);
             claims.put(TokenConstant.CLAIM_KEY_CREATED, new Date());
-            refreshedToken = doGenerateToken(claims);
+            refreshedToken = doGenerateToken(claims.getSubject(), claims);
         } catch (Exception e) {
             refreshedToken = null;
         }
         return refreshedToken;
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        JwtUser user = (JwtUser) userDetails;
+    public Boolean validateToken(String token, JwtTokenInfo tokenInfo) {
         final String username = getUsernameFromToken(token);
         final Date created = getCreatedDateFromToken(token);
         //final Date expiration = getExpirationDateFromToken(token);
         return (
-                username.equals(user.getUsername())
+                username.equals(tokenInfo.getUsername())
                         && !isTokenExpired(token)
-                        && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()));
+                        && !isCreatedBeforeLastPasswordReset(created, tokenInfo.getLastPasswordReset()));
     }
 
     public String getTokenHeader() {
@@ -168,6 +193,14 @@ public class JwtTokenUtil implements Serializable {
 
     public void setTokenHeader(String tokenHeader) {
         this.tokenHeader = tokenHeader;
+    }
+
+    public String getTokenPrefix() {
+        return tokenPrefix;
+    }
+
+    public void setTokenPrefix(String tokenPrefix) {
+        this.tokenPrefix = tokenPrefix;
     }
 
     public String getSecret() {
