@@ -7,16 +7,19 @@
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-
-    <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="myframeworkProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="locations">
             <list>
-                <!-- 这里支持多种寻址方式：classpath和file -->
-                <value>classpath*:config/myframework.properties</value>
+                <value>classpath*:META-INF/spring/myframework.properties</value>
             </list>
         </property>
         <property name="fileEncoding" value="UTF-8"/>
+    </bean>
+
+    <bean id="myframeworkConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreResourceNotFound" value="false" />
+        <property name="properties" ref="myframeworkProperties" />
+        <property name="order" value="10"></property>
     </bean>
 
     <bean name="springContextUtil" class="com.myframework.util.SpringContextUtil"></bean>

@@ -23,6 +23,8 @@ public class TokenManager {
 
     private final static Logger logger = LoggerFactory.getLogger(TokenManager.class);
 
+    private static JwtTokenUtil jwtTokenUtil = null;
+
     public static boolean isTokenEnable() {
         return getJwtTokenUtil().isTokenEnable();
     }
@@ -126,6 +128,9 @@ public class TokenManager {
     }
 
     public static JwtTokenUtil getJwtTokenUtil() {
-        return (JwtTokenUtil) SpringContextUtil.getBean(JwtTokenUtil.class);
+        if(jwtTokenUtil == null){
+            jwtTokenUtil = (JwtTokenUtil) SpringContextUtil.getBean(JwtTokenUtil.class);
+        }
+        return jwtTokenUtil;
     }
 }
