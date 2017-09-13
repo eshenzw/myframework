@@ -40,6 +40,17 @@ public class JwtTokenUtil implements Serializable {
     /*刷新token的过期时间(单位：s)*/
     private Long refreshTokenExpiration;
 
+    public String getSubjectFromToken(String token) {
+        String subject;
+        try {
+            final Claims claims = getClaimsFromToken(token);
+            subject = (String) claims.getSubject();
+        } catch (Exception e) {
+            subject = null;
+        }
+        return subject;
+    }
+
     public String getUsernameFromToken(String token) {
         String username;
         try {
@@ -144,7 +155,11 @@ public class JwtTokenUtil implements Serializable {
 
         claims.put(TokenConstant.CLAIM_KEY_USERNAME, tokenInfo.getUsername());
         claims.put(TokenConstant.CLAIM_KEY_AUDIENCE, generateAudience(tokenInfo.getDevice()));
-        claims.put(TokenConstant.CLAIM_KEY_GRANTED, StringUtil.arrayToDelimitedString(tokenInfo.getAuths().toArray(), ","));
+        if (tokenInfo.getAuths() != null) {
+            claims.put(TokenConstant.CLAIM_KEY_GRANTED, StringUtil.arrayToDelimitedString(tokenInfo.getAuths().toArray(), ","));
+        } else {
+            claims.put(TokenConstant.CLAIM_KEY_GRANTED, "");
+        }
 
         final Date createdDate = new Date();
         claims.put(TokenConstant.CLAIM_KEY_CREATED, createdDate);

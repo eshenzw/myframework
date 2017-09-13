@@ -7,6 +7,7 @@ import com.myframework.core.token.exception.TokenException;
 import com.myframework.core.token.TokenManager;
 import com.myframework.core.token.strategy.StrategyEnum;
 import com.myframework.core.token.strategy.TokenStrategy;
+import com.myframework.util.StringUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

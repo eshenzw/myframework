@@ -12,6 +12,7 @@ import com.myframework.core.filter.RequestFilter;
 import com.myframework.core.token.JwtTokenUtil;
 import com.myframework.core.token.TokenManager;
 import com.myframework.core.token.exception.TokenException;
+import com.myframework.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,10 +58,6 @@ public class TokenStrategyExecutor implements ApplicationContextAware {
         // 获取token，
         String token = TokenManager.getTokenFromRequest(request);
 
-        if (StringUtils.isEmpty(token)) {
-            throw new TokenException("token不存在");
-        }
-
         RequestFilter.setCurrentToken(token);
 
         try {
@@ -96,22 +93,18 @@ public class TokenStrategyExecutor implements ApplicationContextAware {
 
         // authToken.startsWith("Bearer ")
         // String authToken = header.substring(7);
-        String username = jwtTokenUtil.getUsernameFromToken(token);
+        String subject = jwtTokenUtil.getSubjectFromToken(token);
 
-        logger.info("checking authentication für user " + username);
+        logger.info("checking authentication for subject " + subject);
 
-        if (username != null) {
+        for (TokenStrategy strategy : strategyList) {
 
-            for (TokenStrategy strategy : strategyList) {
+            StrategyEnum result = strategy.vaidateToken(token, request, reponse);
 
-                StrategyEnum result = strategy.vaidateToken(token, request, reponse);
-
-                if (result == StrategyEnum.STRATEGY_VALIDATE_SUCCESS_ADN_BREAK) {
-                    break;
-
-                }
-
+            if (result == StrategyEnum.STRATEGY_VALIDATE_SUCCESS_ADN_BREAK) {
+                break;
             }
+
         }
 
     }

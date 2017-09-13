@@ -16,6 +16,13 @@ public class TokenDevice implements Device {
 
     private String platform;
 
+    public TokenDevice() {
+    }
+
+    public TokenDevice(String platform) {
+        this.platform = platform;
+    }
+
     @Override
     public boolean isNormal() {
         return WEB.equals(platform);

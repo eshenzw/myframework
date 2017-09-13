@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mobile.device.Device;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,15 +33,19 @@ public class TokenManager {
     public static String getTokenFromRequest(HttpServletRequest request) {
         String token = request.getHeader(getJwtTokenUtil().getTokenHeader());
         //header 取不到的时候从参数里取token字段
-        if (StringUtil.isEmpty(token)) {
+        if (StringUtil.isNullOrEmpty(token)) {
             token = request.getParameter(getJwtTokenUtil().getTokenHeader());
         }
         //header 取不到的时候从token里取token字段
-        if (StringUtil.isEmpty(token)) {
-            token = CookieUtil.getCookie(request.getCookies(), getJwtTokenUtil().getTokenHeader()).getValue();
+        if (StringUtil.isNullOrEmpty(token)) {
+
+            Cookie tokenCookie = CookieUtil.getCookie(request.getCookies(), getJwtTokenUtil().getTokenHeader());
+            if (tokenCookie != null) {
+                token = tokenCookie.getValue();
+            }
         }
 
-        if (token.contains(getJwtTokenUtil().getTokenPrefix())) {
+        if (!StringUtil.isNullOrEmpty(token) && token.contains(getJwtTokenUtil().getTokenPrefix())) {
             token = token.substring(getJwtTokenUtil().getTokenPrefix().length() + 1);
         }
 
@@ -51,11 +56,9 @@ public class TokenManager {
         return getJwtTokenUtil().isTokenExpired(token);
     }
 
-    public static Pair<JwtInfo, JwtInfo> createAuthenticationToken(JwtSubjectInfo jwtSubjectInfo,
-                                                                   Device device) throws TokenException {
+    public static Pair<JwtInfo, JwtInfo> createAuthenticationToken(JwtSubjectInfo jwtSubjectInfo) throws TokenException {
         // Reload password post-security so we can generate token
         JwtTokenUtil jwtTokenUtil = SpringContextUtil.getBean(JwtTokenUtil.class);
-        jwtSubjectInfo.setDevice(device);
         // 将当前token信息保存到session
         RequestFilter.getSession().setAttribute(TokenConstant.SESSION_SUBJECT_INFO, jwtSubjectInfo);
         JwtInfo tokenInfo = jwtTokenUtil.generateToken(jwtSubjectInfo);
@@ -65,12 +68,15 @@ public class TokenManager {
     }
 
     public static Pair<JwtInfo, JwtInfo> refreshAndGetAuthenticationToken(String refreshToken) throws TokenException {
-        JwtInfo tokenInfo = getJwtTokenUtil().refreshToken(refreshToken,false);
-        JwtInfo refreshTokenInfo = getJwtTokenUtil().refreshToken(refreshToken,true);
+        JwtInfo tokenInfo = getJwtTokenUtil().refreshToken(refreshToken, false);
+        JwtInfo refreshTokenInfo = getJwtTokenUtil().refreshToken(refreshToken, true);
         return Pair.of(tokenInfo, refreshTokenInfo);
     }
 
     public static boolean validateToken(String token) throws TokenException {
+        if (StringUtil.isNullOrEmpty(token)) {
+            throw new TokenException("token not exist!");
+        }
         JwtSubjectInfo jwtSubjectInfo = (JwtSubjectInfo) RequestFilter.getSession().getAttribute(TokenConstant.SESSION_SUBJECT_INFO);
         boolean valid = true;
         if (isTokenExpired(token)) {
@@ -88,18 +94,18 @@ public class TokenManager {
 
     public static boolean validateTokenAuth(String withTokenAuth, HttpServletRequest request) throws TokenException {
         String token = getTokenFromRequest(request);
-        if (StringUtils.isEmpty(token)) {
-            throw new TokenException("token不存在");
+        if (StringUtil.isNullOrEmpty(token)) {
+            throw new TokenException("token not exist!");
         }
         String grantedAuths = getJwtTokenUtil().getGrantedAuthsFromToken(token);
-        if (StringUtil.isEmpty(grantedAuths)) {
-            throw new TokenException("token授权失败");
+        if (StringUtil.isNullOrEmpty(grantedAuths)) {
+            throw new TokenException("token auth failed");
         }
         Collection<String> granted = Arrays.asList(grantedAuths.split(","));
         Collection<String> auths = Arrays.asList(withTokenAuth.split(","));
         for (String auth : auths) {
             if (!granted.contains(auth)) {
-                throw new TokenException("token授权失败");
+                throw new TokenException("token auth failed");
             }
         }
         return true;
@@ -128,7 +134,7 @@ public class TokenManager {
     }
 
     public static JwtTokenUtil getJwtTokenUtil() {
-        if(jwtTokenUtil == null){
+        if (jwtTokenUtil == null) {
             jwtTokenUtil = (JwtTokenUtil) SpringContextUtil.getBean(JwtTokenUtil.class);
         }
         return jwtTokenUtil;
