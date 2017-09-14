@@ -77,11 +77,14 @@ public class TokenManager {
         if (StringUtil.isNullOrEmpty(token)) {
             throw new TokenException("token not exist!");
         }
-        JwtSubjectInfo jwtSubjectInfo = (JwtSubjectInfo) RequestFilter.getSession().getAttribute(TokenConstant.SESSION_SUBJECT_INFO);
+        JwtSubjectInfo jwtSubjectInfo = null;
+        if (RequestFilter.getSession() != null && RequestFilter.getSession().getAttribute(TokenConstant.SESSION_SUBJECT_INFO) != null) {
+            jwtSubjectInfo = (JwtSubjectInfo) RequestFilter.getSession().getAttribute(TokenConstant.SESSION_SUBJECT_INFO);
+        }
         boolean valid = true;
         if (isTokenExpired(token)) {
             //已经过期的token，判断能否刷新并继续用一段时间
-            if (getJwtTokenUtil().canTokenBeRefreshed(token, jwtSubjectInfo.getLastPasswordReset())) {
+            if (getJwtTokenUtil().canTokenBeRefreshed(token, jwtSubjectInfo != null ? jwtSubjectInfo.getLastPasswordReset() : null)) {
                 valid = getJwtTokenUtil().validateToken(token, jwtSubjectInfo);
             }
         } else {

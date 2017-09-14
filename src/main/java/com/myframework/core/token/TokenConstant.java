@@ -11,11 +11,6 @@ public class TokenConstant {
     public static final String CLAIM_KEY_CREATED = "created";
     public static final String CLAIM_KEY_EXPIRED = "exp";
 
-    public static final String AUDIENCE_UNKNOWN = "unknown";
-    public static final String AUDIENCE_WEB = "web";
-    public static final String AUDIENCE_MOBILE = "mobile";
-    public static final String AUDIENCE_TABLET = "tablet";
-
     public static final String SESSION_REFER_TOKEN = "session_refer_token";
     public static final String SESSION_REFRESH_TOKEN = "session_refresh_token";
     public static final String SESSION_SUBJECT_INFO = "session_subject_info";

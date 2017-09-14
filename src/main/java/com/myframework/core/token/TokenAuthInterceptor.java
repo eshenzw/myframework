@@ -157,7 +157,7 @@ public class TokenAuthInterceptor extends HandlerInterceptorAdapter {
 
         }
 
-        redirectTo(request, response, e, TokenConstant.AUDIENCE_UNKNOWN);
+        redirectTo(request, response, e, TokenDevice.UNKNOWN);
 
     }
 
@@ -174,14 +174,15 @@ public class TokenAuthInterceptor extends HandlerInterceptorAdapter {
             irediret.redirect(request, response, e, audience);
         } else {
             // 提供redirect 默认跳转实现
-            if (TokenConstant.AUDIENCE_WEB.equals(audience)) {
+            TokenDevice device = new TokenDevice(audience);
+            if (device.isNormal()) {
                 response.sendRedirect(RequestFilter.getBasePath() + TokenManager.getJwtTokenUtil().getRedirectUrl());
-            } else if (TokenConstant.AUDIENCE_MOBILE.equals(audience)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Mobile Unauthorized:"+e.getMessage());
-            } else if (TokenConstant.AUDIENCE_TABLET.equals(audience)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Tablet Unauthorized:"+e.getMessage());
-            } else if (TokenConstant.AUDIENCE_UNKNOWN.equals(audience)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unknown Unauthorized:"+e.getMessage());
+            } else if (device.isMobile()) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Mobile Unauthorized:" + e.getMessage());
+            } else if (device.isTablet()) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Tablet Unauthorized:" + e.getMessage());
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unknown Unauthorized:" + e.getMessage());
             }
         }
     }

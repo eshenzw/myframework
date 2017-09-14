@@ -128,23 +128,6 @@ public class JwtTokenUtil implements Serializable {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
-    private String generateAudience(Device device) {
-        String audience = TokenConstant.AUDIENCE_UNKNOWN;
-        if (device.isNormal()) {
-            audience = TokenConstant.AUDIENCE_WEB;
-        } else if (device.isTablet()) {
-            audience = TokenConstant.AUDIENCE_TABLET;
-        } else if (device.isMobile()) {
-            audience = TokenConstant.AUDIENCE_MOBILE;
-        }
-        return audience;
-    }
-
-    private Boolean ignoreTokenExpiration(String token) {
-        String audience = getAudienceFromToken(token);
-        return (TokenConstant.AUDIENCE_TABLET.equals(audience) || TokenConstant.AUDIENCE_MOBILE.equals(audience));
-    }
-
     private Boolean inTokenExpirationProtectTime(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return new Date().before(new Date(expiration.getTime() + expirationProtectTime * 1000));
@@ -154,7 +137,7 @@ public class JwtTokenUtil implements Serializable {
         Map<String, Object> claims = new HashMap<>();
 
         claims.put(TokenConstant.CLAIM_KEY_USERNAME, tokenInfo.getUsername());
-        claims.put(TokenConstant.CLAIM_KEY_AUDIENCE, generateAudience(tokenInfo.getDevice()));
+        claims.put(TokenConstant.CLAIM_KEY_AUDIENCE, tokenInfo.getDevice().getPlatform());
         if (tokenInfo.getAuths() != null) {
             claims.put(TokenConstant.CLAIM_KEY_GRANTED, StringUtil.arrayToDelimitedString(tokenInfo.getAuths().toArray(), ","));
         } else {
@@ -235,10 +218,10 @@ public class JwtTokenUtil implements Serializable {
         final String username = getUsernameFromToken(token);
         final Date created = getCreatedDateFromToken(token);
         //final Date expiration = getExpirationDateFromToken(token);
-        return (
-                username.equals(tokenInfo.getUsername())
-                        //&& !isTokenExpired(token)
-                        && !isCreatedBeforeLastPasswordReset(created, tokenInfo.getLastPasswordReset()));
+        return (tokenInfo != null
+                && username.equals(tokenInfo.getUsername())
+                //&& !isTokenExpired(token)
+                && !isCreatedBeforeLastPasswordReset(created, tokenInfo.getLastPasswordReset()));
     }
 
     /**
@@ -273,7 +256,7 @@ public class JwtTokenUtil implements Serializable {
         if (CacheUtil.getShareCache().get(generateCacheKeyForToken(token)) != null) {
             cacheToken = CacheUtil.getShareCache().get(generateCacheKeyForToken(token)).get().toString();
         }
-        if (StringUtil.isEmpty(cacheToken)) {
+        if (StringUtil.isEmpty(cacheToken) && RequestFilter.getSession() != null && RequestFilter.getSession().getAttribute(TokenConstant.SESSION_REFER_TOKEN) != null) {
             cacheToken = (String) RequestFilter.getSession().getAttribute(TokenConstant.SESSION_REFER_TOKEN);
         }
         return cacheToken;

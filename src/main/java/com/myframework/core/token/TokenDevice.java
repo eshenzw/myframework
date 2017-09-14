@@ -11,6 +11,7 @@ public class TokenDevice implements Device {
     public static final String WEB = "web";
     public static final String ANDROID = "android";
     public static final String IOS = "ios";
+    public static final String WEIXIN = "weixin";
     public static final String TABLET = "tablet";
     public static final String UNKNOWN = "unknown";
 
