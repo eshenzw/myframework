@@ -2,6 +2,7 @@ package com.myframework.core.token.strategy.impl;
 
 import com.myframework.core.token.strategy.StrategyEnum;
 import com.myframework.core.token.strategy.TokenStrategy;
+import com.myframework.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.AntPathMatcher;
@@ -38,6 +39,10 @@ public class UrlTokenStrategy extends TokenStrategy {
         }
         // 统一白名单过滤
         String url = request.getRequestURI();
+        String contextPath = request.getServletContext().getContextPath();
+        if(!StringUtil.isNullOrEmpty(contextPath)){
+            url = url.substring(contextPath.length());
+        }
         AntPathMatcher pathMatcher = new AntPathMatcher();
         for (int i = 0; i < whiteList.length; i++) {
             String whiteUri = whiteList[i];
