@@ -12,8 +12,6 @@ import com.myframework.core.filter.RequestFilter;
 import com.myframework.core.token.JwtTokenUtil;
 import com.myframework.core.token.TokenManager;
 import com.myframework.core.token.exception.TokenException;
-import com.myframework.util.StringUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;

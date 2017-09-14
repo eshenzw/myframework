@@ -6,11 +6,9 @@ import com.myframework.core.token.exception.TokenException;
 import com.myframework.util.CookieUtil;
 import com.myframework.util.SpringContextUtil;
 import com.myframework.util.StringUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mobile.device.Device;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

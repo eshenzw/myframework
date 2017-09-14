@@ -6,13 +6,8 @@ import com.myframework.core.token.exception.TokenException;
 import com.myframework.util.CookieUtil;
 import com.myframework.util.StringUtil;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mobile.device.Device;
 
 import java.io.Serializable;
 import java.util.Date;
