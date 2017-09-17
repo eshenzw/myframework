@@ -11,6 +11,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -43,8 +44,14 @@ public class ImageUtil {
     //对象内变量
     private BufferedImage image = null;
 
-    public void load(File imageFile) throws IOException {
+    public ImageUtil load(File imageFile) throws IOException {
         this.image = ImageIO.read(imageFile);
+        return this;
+    }
+
+    public ImageUtil load(InputStream inputStream) throws IOException {
+        this.image = ImageIO.read(inputStream);
+        return this;
     }
 
     public int getImageWidth() {
