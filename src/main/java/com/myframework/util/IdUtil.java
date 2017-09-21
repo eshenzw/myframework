@@ -4,25 +4,23 @@ package com.myframework.util;
  * Created by zw on 2017/9/21.
  */
 
-import com.myframework.bean.SnowflakeIdWorker;
-import com.myframework.constant.Constants;
-
+import com.myframework.config.MyframeworkConfig;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class IdUtil {
 
-    private final static String DATACENTER_ID = PropertiesUtil.getProp(Constants.MY_FRAMEWORK_FILE_PATH,"datacenterId","1");
+    private final static String DATACENTER_ID = MyframeworkConfig.getValue("datacenterId", "1");
 
-    private final static String WORKER_ID = PropertiesUtil.getProp(Constants.MY_FRAMEWORK_FILE_PATH,"workerId","1");
+    private final static String WORKER_ID = MyframeworkConfig.getValue("workerId", "1");
 
-    final static char[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
+    final static char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8',
             '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
             'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
             'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
             'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
-            'Z' };
+            'Z'};
 
     final static Map<Character, Integer> digitMap = new HashMap<Character, Integer>();
 
@@ -89,10 +87,8 @@ public class IdUtil {
     /**
      * 将字符串转换为长整型数字
      *
-     * @param s
-     *            数字字符串
-     * @param radix
-     *            进制数
+     * @param s     数字字符串
+     * @param radix 进制数
      * @return
      */
     private static long toNumber(String s, int radix) {
@@ -162,9 +158,10 @@ public class IdUtil {
 
     /**
      * 产生19位的UUID
+     *
      * @return
      */
-    public static String generateUUID(){
+    public static String generateUUID() {
         //产生UUID
         UUID uuid = UUID.randomUUID();
         StringBuilder sb = new StringBuilder();
@@ -179,16 +176,17 @@ public class IdUtil {
 
     /**
      * 产生Twitter_Snowflake 递增唯一
+     *
      * @param
      */
-    public static long generateID(){
+    public static long generateID() {
         return idWorker.nextId();
     }
 
     public static void main(String[] args) {
         long u1 = IdUtil.generateID();
         long u2 = IdUtil.generateID();
-        System.out.println(u1+" "+ (u1 < u2) +" "+u2);
+        System.out.println(u1 + " " + (u1 < u2) + " " + u2);
     }
 
 }
