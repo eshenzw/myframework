@@ -5,6 +5,7 @@ package com.myframework.util;
  */
 
 import com.myframework.config.MyframeworkConfig;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -157,11 +158,42 @@ public class IdUtil {
     }
 
     /**
+     * 获取字符32位字符串的UUID（唯一）.
+     *
+     * @return the UUID
+     */
+    public static String getUUID()
+    {
+        String uuid = java.util.UUID.randomUUID().toString();
+        return uuid.replaceAll("-", "");
+    }
+
+    /**
+     * 获取UUID的HashCode.
+     *
+     * @return the uUID hash code
+     */
+    public static long getUUIDHashCode()
+    {
+        return getUUID().hashCode();
+    }
+
+    /**
+     * 获取Long型的UUID（唯一）.
+     *
+     * @return the UUID least bits
+     */
+    public static long getUUID2Long()
+    {
+        return java.util.UUID.randomUUID().getLeastSignificantBits() * -1;
+    }
+
+    /**
      * 产生19位的UUID
      *
      * @return
      */
-    public static String generateUUID() {
+    public static String getUUID19() {
         //产生UUID
         UUID uuid = UUID.randomUUID();
         StringBuilder sb = new StringBuilder();
@@ -179,14 +211,14 @@ public class IdUtil {
      *
      * @param
      */
-    public static long generateID() {
+    public static long getSnowflakeId(){
         return idWorker.nextId();
     }
 
     public static void main(String[] args) {
-        long u1 = IdUtil.generateID();
-        long u2 = IdUtil.generateID();
-        System.out.println(u1 + " " + (u1 < u2) + " " + u2);
+        Long u1 = IdUtil.getSnowflakeId();
+        Long u2 = IdUtil.getSnowflakeId();
+        System.out.println(u1 + " " + (u1.compareTo(u2) < 0) + " " + u2);
     }
 
 }

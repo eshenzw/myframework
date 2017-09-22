@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.myframework.util.IdUtil;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -213,6 +214,6 @@ public abstract class BaseDao<T extends BaseEntity> extends SqlSessionDaoSupport
      */
     public Long generateId()
     {
-        return (Long) StringUtil.getUUID2Long();
+        return (Long) IdUtil.getSnowflakeId();
     }
 }
