@@ -215,7 +215,7 @@ public class DesUtils
 	{
 		try
 		{
-			String test = "parttime2016";
+			String test = "2017@qmyc";
 			DesUtils des = new DesUtils();// 自定义密钥
 			System.out.println("加密前的字符：" + test);
 			System.out.println("加密后的字符：" + des.encrypt(test));

@@ -58,15 +58,13 @@ public class RequestFilter implements Filter {
         } catch (IOException iox) {
             filterConfig.getServletContext().log(iox.getMessage());
         } finally {
-            requestLocal.set(null);
-            responseLocal.set(null);
+            clearThreadLocal();
         }
     }
 
     @Override
     public void destroy() {
-        requestLocal.set(null);
-        responseLocal.set(null);
+        clearThreadLocal();
     }
 
     @Override
