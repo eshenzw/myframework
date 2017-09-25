@@ -6,15 +6,17 @@ package com.myframework.util;
 
 import com.myframework.config.MyframeworkConfig;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class IdUtil {
 
-    private final static String DATACENTER_ID = MyframeworkConfig.getValue("datacenterId", "1");
+    private final static String DATACENTER_ID = MyframeworkConfig.getValue("datacenterId", "");
 
-    private final static String WORKER_ID = MyframeworkConfig.getValue("workerId", "1");
+    private final static String WORKER_ID = MyframeworkConfig.getValue("workerId", "");
 
     final static char[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8',
             '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
@@ -32,7 +34,24 @@ public class IdUtil {
             digitMap.put(digits[i], (int) i);
         }
         //
-        idWorker = new SnowflakeIdWorker(Long.valueOf(DATACENTER_ID), Long.valueOf(WORKER_ID));
+        if(StringUtil.isNullOrEmpty(DATACENTER_ID) || StringUtil.isNullOrEmpty(WORKER_ID)){
+            /**
+             * 这里在配置文件没有配置机房，机器id时，默认采用机器ip的二进制的后10位，其中高5位用作机房id(0-31)，低5位用作机器id(0-31)
+             */
+            InetAddress address;
+            try {
+                address = InetAddress.getLocalHost();
+            } catch (final UnknownHostException e) {
+                throw new IllegalStateException("Cannot get LocalHost InetAddress, please check your network!");
+            }
+            byte[] ipAddressByteArray = address.getAddress();
+            long dataCenterId = (long)(((ipAddressByteArray[ipAddressByteArray.length - 2] & 0B11) << 3)
+                                        | ((ipAddressByteArray[ipAddressByteArray.length - 1] & 0B11100000) >> 5));
+            long workerId = (long)(ipAddressByteArray[ipAddressByteArray.length - 1] & 0B00011111);
+            idWorker = new SnowflakeIdWorker(dataCenterId,workerId);
+        }else{
+            idWorker = new SnowflakeIdWorker(Long.valueOf(DATACENTER_ID), Long.valueOf(WORKER_ID));
+        }
     }
 
     /**
