@@ -5,8 +5,9 @@ package com.myframework.util;
  */
 
 import com.myframework.config.MyframeworkConfig;
-import com.myframework.core.common.utils.LocalhostIpFetcher;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -37,11 +38,16 @@ public class IdUtil {
             /**
              * 这里在配置文件没有配置机房，机器id时，默认采用机器ip的二进制的后10位，其中高5位用作机房id(0-31)，低5位用作机器id(0-31)
              */
-            String ipAddress = LocalhostIpFetcher.fetchLocalIP();
-            String[] ipAddressByteArray = ipAddress.split("\\.");
-            long dataCenterId = (long)(((Short.valueOf(ipAddressByteArray[ipAddressByteArray.length - 2]) & 0B11) << 3)
-                                        | ((Short.valueOf(ipAddressByteArray[ipAddressByteArray.length - 1]) & 0B11100000) >> 5));
-            long workerId = (long)(Short.valueOf(ipAddressByteArray[ipAddressByteArray.length - 1]) & 0B00011111);
+            InetAddress address;
+            try {
+                address = InetAddress.getLocalHost();
+            } catch (final UnknownHostException e) {
+                throw new IllegalStateException("Cannot get LocalHost InetAddress, please check your network!");
+            }
+            byte[] ipAddressByteArray = address.getAddress();
+            long dataCenterId = (long)(((ipAddressByteArray[ipAddressByteArray.length - 2] & 0B11) << 3)
+                                        | ((ipAddressByteArray[ipAddressByteArray.length - 1] & 0B11100000) >> 5));
+            long workerId = (long)(ipAddressByteArray[ipAddressByteArray.length - 1] & 0B00011111);
             idWorker = new SnowflakeIdWorker(dataCenterId,workerId);
         }else{
             idWorker = new SnowflakeIdWorker(Long.valueOf(DATACENTER_ID), Long.valueOf(WORKER_ID));
