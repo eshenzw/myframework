@@ -5,6 +5,7 @@ package com.myframework.util;
  */
 
 import com.myframework.config.MyframeworkConfig;
+import com.myframework.core.common.utils.LocalhostIpFetcher;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -34,22 +35,17 @@ public class IdUtil {
             digitMap.put(digits[i], (int) i);
         }
         //
-        if(StringUtil.isNullOrEmpty(DATACENTER_ID) || StringUtil.isNullOrEmpty(WORKER_ID)){
+        if (StringUtil.isNullOrEmpty(DATACENTER_ID) || StringUtil.isNullOrEmpty(WORKER_ID)) {
             /**
              * 这里在配置文件没有配置机房，机器id时，默认采用机器ip的二进制的后10位，其中高5位用作机房id(0-31)，低5位用作机器id(0-31)
              */
-            InetAddress address;
-            try {
-                address = InetAddress.getLocalHost();
-            } catch (final UnknownHostException e) {
-                throw new IllegalStateException("Cannot get LocalHost InetAddress, please check your network!");
-            }
-            byte[] ipAddressByteArray = address.getAddress();
-            long dataCenterId = (long)(((ipAddressByteArray[ipAddressByteArray.length - 2] & 0B11) << 3)
-                                        | ((ipAddressByteArray[ipAddressByteArray.length - 1] & 0B11100000) >> 5));
-            long workerId = (long)(ipAddressByteArray[ipAddressByteArray.length - 1] & 0B00011111);
-            idWorker = new SnowflakeIdWorker(dataCenterId,workerId);
-        }else{
+            String ipAddress = LocalhostIpFetcher.fetchLocalIP();
+            String[] ipAddressByteArray = ipAddress.split("\\.");
+            long dataCenterId = (long) (((Short.valueOf(ipAddressByteArray[ipAddressByteArray.length - 2]) & 0B11) << 3)
+                    | ((Short.valueOf(ipAddressByteArray[ipAddressByteArray.length - 1]) & 0B11100000) >> 5));
+            long workerId = (long) (Short.valueOf(ipAddressByteArray[ipAddressByteArray.length - 1]) & 0B00011111);
+            idWorker = new SnowflakeIdWorker(dataCenterId, workerId);
+        } else {
             idWorker = new SnowflakeIdWorker(Long.valueOf(DATACENTER_ID), Long.valueOf(WORKER_ID));
         }
     }
@@ -181,8 +177,7 @@ public class IdUtil {
      *
      * @return the UUID
      */
-    public static String getUUID()
-    {
+    public static String getUUID() {
         String uuid = java.util.UUID.randomUUID().toString();
         return uuid.replaceAll("-", "");
     }
@@ -192,8 +187,7 @@ public class IdUtil {
      *
      * @return the uUID hash code
      */
-    public static long getUUIDHashCode()
-    {
+    public static long getUUIDHashCode() {
         return getUUID().hashCode();
     }
 
@@ -202,8 +196,7 @@ public class IdUtil {
      *
      * @return the UUID least bits
      */
-    public static long getUUID2Long()
-    {
+    public static long getUUID2Long() {
         return java.util.UUID.randomUUID().getLeastSignificantBits() * -1;
     }
 
@@ -230,7 +223,7 @@ public class IdUtil {
      *
      * @param
      */
-    public static long getSnowflakeId(){
+    public static long getSnowflakeId() {
         return idWorker.nextId();
     }
 
