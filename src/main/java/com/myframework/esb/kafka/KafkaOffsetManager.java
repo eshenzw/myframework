@@ -1,14 +1,23 @@
 package com.myframework.esb.kafka;
 
+import com.myframework.esb.ZooKeeperConstants;
 import com.myframework.util.StringUtil;
 
 public class KafkaOffsetManager
 {
 	private String storagePrefix;
+	private String topic;
+	private int partition;
+	private long offset;
 
 	public KafkaOffsetManager(String storagePrefix)
 	{
 		this.storagePrefix = storagePrefix;
+	}
+
+	public void saveOffsetInExternalStore() throws Exception
+	{
+		ZookeeperManager.save(getStoragePath(topic, partition), String.valueOf(offset));
 	}
 
 	/**
@@ -56,7 +65,31 @@ public class KafkaOffsetManager
 
 	private String getStoragePath(String topic, int partition)
 	{
-		return String.format("/myframework/kafka/%s-%s-%s", storagePrefix, topic, partition);
+		return String.format(ZooKeeperConstants.KAFKA_OFFSET_FORMAT, storagePrefix, topic, partition);
 		// return storagePrefix + "-" + topic + "-" + partition;
+	}
+
+	public String getTopic() {
+		return topic;
+	}
+
+	public void setTopic(String topic) {
+		this.topic = topic;
+	}
+
+	public int getPartition() {
+		return partition;
+	}
+
+	public void setPartition(int partition) {
+		this.partition = partition;
+	}
+
+	public long getOffset() {
+		return offset;
+	}
+
+	public void setOffset(long offset) {
+		this.offset = offset;
 	}
 }

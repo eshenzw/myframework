@@ -23,4 +23,13 @@ public class SystemMessageCenter implements IMessageCenter
 		logger.warn("!!!!系统消息中间件出现异常!!!!");
 	}
 
+	@Override
+	public void initialize() {
+
+	}
+
+	@Override
+	public void destroy() {
+
+	}
 }

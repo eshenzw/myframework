@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface IMessageCenter
 {
+	public void initialize();
+	public void destroy();
 	/**
 	 * 发送单条消息
 	 * 

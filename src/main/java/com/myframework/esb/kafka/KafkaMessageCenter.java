@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.myframework.esb.MessageQueueConsumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -211,6 +212,53 @@ public class KafkaMessageCenter implements IMessageCenter
 				executor.execute(th);
 				logger.info("启动消费者:{}", i);
 			}
+		}
+		catch (Exception e)
+		{
+			throw new MessageCenterException("消息中心启动监听失败：" + e.getMessage());
+		}
+	}
+
+	/**
+	 * 启动同步消费者
+	 * @param config 消费者配置
+	 * @param topics 消息主题
+	 * @param messageQueueConsumerService 消息处理实现
+	 * @throws MessageCenterException
+	 */
+	public static void startSyncConsumer(Properties config, List<String> topics,
+										 MessageQueueConsumer messageQueueConsumerService) throws MessageCenterException
+	{
+		if (isChannelConsumerClosed())
+		{
+			logger.warn("消息中心通道关闭监听程序不启动!");
+			return;
+		}
+		if (topics.isEmpty())
+		{
+			logger.warn("消息中心未配置监听主题!");
+			return;
+		}
+		try
+		{
+			config.put("enable.auto.commit", "false");
+			KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(config);
+			consumers.add(consumer);
+			String[] topicStr = topics.toArray(new String[0]);
+			logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			logger.info("                             {}                            ", Arrays.toString(topicStr));
+			logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+			logger.info("消息中心启动监听程序,使用同步精确消费方式！");
+			consumer.subscribe(topics, new KafkaConsumerRebalancerListener(consumer));
+
+			ExecutorService executor = Executors.newFixedThreadPool(1);
+
+			KafkaSyncConsumerThread th = new KafkaSyncConsumerThread();
+			th.setConsumer(consumer);
+			th.setMessageQueueConsumer(messageQueueConsumerService);
+			executor.execute(th);
+			logger.info("启动同步消费者:{}", executor.getClass().getName());
 		}
 		catch (Exception e)
 		{

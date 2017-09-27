@@ -19,6 +19,9 @@ public class MessageCenterHandler
 {
 	private static Logger logger = LoggerFactory.getLogger(MessageCenterHandler.class);
 	private static IMessageCenter messageWorkHandler = null;
+	private SystemMessageCenter systemMessageCenter;
+	private KafkaMessageCenter kafkaMessageCenter;
+
 	public static final String TOPIC_EVENT = "topic-event";
 	public static final String TOPIC_SYSTEMLOG = "topic-systemlog";
 	public static final String TOPIC_BUTTONCLICK = "topic-buttonclick";
@@ -26,6 +29,61 @@ public class MessageCenterHandler
 	public static final String TOPIC_BLOG = "topic-blog";
 	public static final String TOPIC_XLOC = "topic-xloc";
 	public static final String TOPIC_SWAP = "topic-swap";
+
+	public static void init()
+	{
+		logger.info("prepare for loading context ....");
+		if (SpringContextUtil.getContext() == null)
+		{
+			logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>初始化系统消息队列<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+			while (true)
+			{
+				try
+				{
+					Thread.sleep(1000);
+					logger.info("Try again init context ....");
+					if (SpringContextUtil.getContext() != null)
+					{
+						logger.info("Try again context init success");
+						break;
+					}
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		logger.info("context loading completed.");
+		MessageCenterHandler messageCenterHandler = (MessageCenterHandler) SpringContextUtil.getBean("messageCenterHandler");
+		messageCenterHandler.initWorkHandler().initialize();
+	}
+
+	private IMessageCenter initWorkHandler()
+	{
+		if (messageWorkHandler == null)
+		{
+			if (isChannelClosed())
+			{
+				logger.info("消息通道打开方式：系统内置ESB通道");
+				messageWorkHandler = this.getSystemMessageCenter();
+			}
+			else
+			{
+				logger.info("消息通道打开方式：Kafka消息ESB通道");
+				messageWorkHandler = this.getKafkaMessageCenter();
+			}
+		}
+		return messageWorkHandler;
+	}
+
+	public static void destroy()
+	{
+		if (messageWorkHandler != null)
+		{
+			messageWorkHandler.destroy();
+		}
+	}
 
 	/**
 	 * 判断消息通道是否主动关闭
@@ -209,5 +267,21 @@ public class MessageCenterHandler
 			message.put("_current_tenant_id_", tenantId);
 			getWorkHandler().send(TOPIC_EVENT, event, message.toString());
 		}
+	}
+
+	public SystemMessageCenter getSystemMessageCenter() {
+		return systemMessageCenter;
+	}
+
+	public void setSystemMessageCenter(SystemMessageCenter systemMessageCenter) {
+		this.systemMessageCenter = systemMessageCenter;
+	}
+
+	public KafkaMessageCenter getKafkaMessageCenter() {
+		return kafkaMessageCenter;
+	}
+
+	public void setKafkaMessageCenter(KafkaMessageCenter kafkaMessageCenter) {
+		this.kafkaMessageCenter = kafkaMessageCenter;
 	}
 }
