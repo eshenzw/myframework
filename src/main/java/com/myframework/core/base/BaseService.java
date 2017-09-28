@@ -44,13 +44,13 @@ public abstract class BaseService<T extends BaseEntity, D extends BaseDao<T>> im
     }
 
     @Override
-    public List<T> queryList(Map<String, Object> params) {
-        return dao.queryList(params);
+    public List<T> list(Map<String, Object> params) {
+        return dao.list(params);
     }
 
     @Override
-    public T getByID(Serializable id) {
-        return dao.getByID(id);
+    public T get(Serializable id) {
+        return dao.get(id);
     }
 
     @Override
@@ -59,39 +59,39 @@ public abstract class BaseService<T extends BaseEntity, D extends BaseDao<T>> im
     }
 
     @Override
-    public int add(T t) {
-        return dao.add(t);
+    public int insert(T t) {
+        return dao.insert(t);
     }
 
     @Override
-    public int addSelective(T t) {
-        return dao.addSelective(t);
+    public int insertSelective(T t) {
+        return dao.insertSelective(t);
     }
 
     @Override
-    public int updateByID(T t) {
-        return dao.updateByID(t);
+    public int update(T t) {
+        return dao.update(t);
     }
 
     @Override
-    public int updateByIDSelective(T t) {
-        return dao.updateByIDSelective(t);
+    public int updateSelective(T t) {
+        return dao.updateSelective(t);
     }
 
     @Override
-    public int delByID(Serializable id) {
-        return dao.delByID(id);
+    public int delete(Serializable id) {
+        return dao.delete(id);
     }
 
     @Override
-    public int batchDelByIDs(Serializable[] ids) {
-        dao.batchDelByIDs(ids);
+    public int batchDelete(Serializable[] ids) {
+        dao.batchDelete(ids);
         return ids.length;
     }
 
     @Override
-    public List<T> batchAdd(List<T> list) {
-        return dao.batchAdd(list);
+    public List<T> batchInsert(List<T> list) {
+        return dao.batchInsert(list);
     }
 
     @Override
@@ -100,7 +100,7 @@ public abstract class BaseService<T extends BaseEntity, D extends BaseDao<T>> im
     }
 
     @Override
-    public PageInfo<T> queryPage(Map<String, Object> params, Page<T> page) {
-        return dao.queryPage(params, page);
+    public PageInfo<T> page(Map<String, Object> params, Page<T> page) {
+        return dao.page(params, page);
     }
 }

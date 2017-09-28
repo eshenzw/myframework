@@ -18,7 +18,7 @@ public interface IBaseService<T extends BaseEntity> {
      * @param params
      * @return
      */
-    public List<T> queryList(Map<String, Object> params);
+    public List<T> list(Map<String, Object> params);
 
     /**
      * 根据主键id获取对象
@@ -26,7 +26,7 @@ public interface IBaseService<T extends BaseEntity> {
      * @param id
      * @return
      */
-    public T getByID(Serializable id);
+    public T get(Serializable id);
 
     /**
      * 根据名获取对象
@@ -43,7 +43,7 @@ public interface IBaseService<T extends BaseEntity> {
      * @return 插入结果（数量）
      * @deprecated 已经被删除的方法
      */
-    public int add(T t);
+    public int insert(T t);
 
     /**
      * 根据对象有选择性的只插入*字段不为空*到db
@@ -51,7 +51,7 @@ public interface IBaseService<T extends BaseEntity> {
      * @param t  对象
      * @return 插入结果（数量）
      */
-    public int addSelective(T t);
+    public int insertSelective(T t);
 
     /**
      * 根据主键ID查询并*更新所有字段*到db
@@ -60,7 +60,7 @@ public interface IBaseService<T extends BaseEntity> {
      * @return 更新结果（数量）
      * @deprecated  已经被抛弃了的方法
      */
-    public int updateByID(T t);
+    public int update(T t);
 
     /**
      * 根据主键ID查询并有选择性的只更新*字段不为空*到db
@@ -68,7 +68,7 @@ public interface IBaseService<T extends BaseEntity> {
      * @param t
      * @return 更新结果（数量）
      */
-    public int updateByIDSelective(T t);
+    public int updateSelective(T t);
 
     /**
      * 根据主键ID查询并删除对象
@@ -76,7 +76,7 @@ public interface IBaseService<T extends BaseEntity> {
      * @param id
      * @return 删除结果（数量）
      */
-    public int delByID(Serializable id);
+    public int delete(Serializable id);
 
     /**
      * 根据主键ID查询并删除对象
@@ -85,7 +85,7 @@ public interface IBaseService<T extends BaseEntity> {
      * @param ids
      * @return 删除结果（数量）
      */
-    public int batchDelByIDs(Serializable[] ids);
+    public int batchDelete(Serializable[] ids);
 
     /**
      * 根据对象批量插入*所有字段*到db
@@ -94,7 +94,7 @@ public interface IBaseService<T extends BaseEntity> {
      * @return 插入结果（数量）
      * @deprecated 已经被删除的方法
      */
-    public List<T> batchAdd(List<T> list);
+    public List<T> batchInsert(List<T> list);
 
     /**
      * 根据对象批量更新*所有字段*到db
@@ -111,5 +111,5 @@ public interface IBaseService<T extends BaseEntity> {
      * @param page
      * @return
      */
-    public PageInfo<T> queryPage(Map<String, Object> params, Page<T> page);
+    public PageInfo<T> page(Map<String, Object> params, Page<T> page);
 }
