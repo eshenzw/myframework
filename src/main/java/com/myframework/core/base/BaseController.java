@@ -77,7 +77,7 @@ public abstract class BaseController {
 		// TODO Auto-generated method stub
 		HttpSession session = this.getRequest().getSession();
 		if(user != null){
-			session.setAttribute(BaseUserEntity.USER_SESSION_ID, user.getId());
+			session.setAttribute(BaseUserEntity.USER_SESSION_ID, user.getUserId());
 			session.setAttribute(BaseUserEntity.USER_SESSION_BEAN, user);
 		}else{
 			session.setAttribute(BaseUserEntity.USER_SESSION_ID, null);

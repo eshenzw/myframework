@@ -5,7 +5,9 @@ import com.myframework.core.token.annotation.IgnoreTokenAuth;
 import com.myframework.core.token.annotation.WithTokenAuth;
 import com.myframework.core.token.exception.TokenException;
 import com.myframework.core.token.strategy.TokenStrategyExecutor;
+import com.myframework.util.RespUtil;
 import com.myframework.util.SpringContextUtil;
+import com.myframework.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -176,7 +178,11 @@ public class TokenAuthInterceptor extends HandlerInterceptorAdapter {
             // 提供redirect 默认跳转实现
             TokenDevice device = new TokenDevice(audience);
             if (device.isNormal()) {
-                response.sendRedirect(RequestFilter.getBasePath() + TokenManager.getJwtTokenUtil().getRedirectUrl());
+                if (StringUtil.isNotEmpty(TokenManager.getJwtTokenUtil().getRedirectUrl())) {
+                    response.sendRedirect(RequestFilter.getBasePath() + TokenManager.getJwtTokenUtil().getRedirectUrl());
+                } else {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Web Unauthorized:" + e.getMessage());
+                }
             } else if (device.isMobile()) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Mobile Unauthorized:" + e.getMessage());
             } else if (device.isTablet()) {
