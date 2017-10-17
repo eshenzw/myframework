@@ -3,8 +3,10 @@ package com.myframework.util;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSession;
+import org.mybatis.spring.SqlSessionTemplate;
 
 /**
  * Mybatis 工具类
@@ -15,6 +17,8 @@ public class MybatisUtil {
 
     private SqlSession sqlSessionTemplate;
 
+    private Class class1;
+
     private String namespace;
 
     private MybatisUtil() {
@@ -24,9 +28,30 @@ public class MybatisUtil {
     public static MybatisUtil withNameSpace(Class class1) {
         MybatisUtil mybatisUtil = new MybatisUtil();
         mybatisUtil.setSqlSessionTemplate((SqlSession) SpringContextUtil.getBean(SqlSession.class));
-        mybatisUtil.setNamespace(class1.getName());
+        mybatisUtil.setClass1(class1);
         return mybatisUtil;
     }
+
+    public static MybatisUtil withNameSpace(Class class1, ExecutorType executorType) {
+        MybatisUtil mybatisUtil = new MybatisUtil();
+        mybatisUtil.setSqlSessionTemplate((SqlSession) SpringContextUtil.getBean(SqlSession.class));
+        if (mybatisUtil.sqlSessionTemplate instanceof SqlSessionTemplate) {
+            ((SqlSessionTemplate) mybatisUtil.sqlSessionTemplate).getSqlSessionFactory().openSession(executorType);
+        }
+        mybatisUtil.setClass1(class1);
+        return mybatisUtil;
+    }
+
+    public static MybatisUtil withNameSpace(Class class1, ExecutorType executorType, boolean isAutoCommit) {
+        MybatisUtil mybatisUtil = new MybatisUtil();
+        mybatisUtil.setSqlSessionTemplate((SqlSession) SpringContextUtil.getBean(SqlSession.class));
+        if (mybatisUtil.sqlSessionTemplate instanceof SqlSessionTemplate) {
+            mybatisUtil.sqlSessionTemplate = ((SqlSessionTemplate) mybatisUtil.sqlSessionTemplate).getSqlSessionFactory().openSession(executorType, isAutoCommit);
+        }
+        mybatisUtil.setClass1(class1);
+        return mybatisUtil;
+    }
+
 
     public <T> T selectOne(String sqlName) {
         return sqlSessionTemplate.selectOne(getNamespaceDot() + sqlName);
@@ -84,16 +109,44 @@ public class MybatisUtil {
         sqlSessionTemplate.select(getNamespaceDot() + sqlName, parameter, handler);
     }
 
+    public void commit() {
+        sqlSessionTemplate.commit();
+    }
+
+    public void commit(boolean var1) {
+        sqlSessionTemplate.commit(var1);
+    }
+
+    public void rollback() {
+        sqlSessionTemplate.rollback();
+    }
+
+    public void rollback(boolean var1) {
+        sqlSessionTemplate.rollback(var1);
+    }
+
+    public void close() {
+        sqlSessionTemplate.close();
+    }
+
+    public void clearCache() {
+        sqlSessionTemplate.clearCache();
+    }
+
+    public <T> T getMapper() {
+        return sqlSessionTemplate.getMapper((Class<T>) class1);
+    }
+
     public String getNamespaceDot() {
-        return namespace + ".";
+        return this.class1.getName() + ".";
     }
 
-    public String getNamespace() {
-        return namespace;
+    public Class getClass1() {
+        return class1;
     }
 
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
+    public void setClass1(Class class1) {
+        this.class1 = class1;
     }
 
     public void setSqlSessionTemplate(SqlSession sqlSessionTemplate) {
