@@ -36,6 +36,8 @@ public class ImageUtil {
     public static String IMAGE_TYPE_PSD = "psd";// Photoshop的专用格式Photoshop
     private static int MAX_WIDTH = 1500;
     private static String IMAGE_Ext = "gif,jpg,jpeg,png,bmp"; //允许上传的图片
+    /** 用阿里云在线缩略图的样式名("qm320"在oss后台管理中配置) */
+    public static final String OSS_THUMBNAIL_STYLE_PARAM = "?x-oss-process=style/qm320";
 
     public BufferedImage getImage() {
         return image;
@@ -851,6 +853,31 @@ public class ImageUtil {
             System.out.println("图片旋转失败!");
         }
         return flag;
+    }
+
+    /***
+     * 此方法为旧的 getThumbnailName。 旧的getThumbnailName会被1、图片浏览 。2、生成缩略图
+     * 两个场景下调用，对于场景2需要在doThumbnail中兼容处理
+     *
+     * @param fileName
+     * @return
+     */
+    public static String getThumbnailNameForCreate(String fileName)
+    {
+
+        String thumbnailName = "";
+        String suffix = "small";
+        int dotIndex = fileName.lastIndexOf(".");
+        if (dotIndex > 0)
+        {
+            String fileExt = fileName.substring(dotIndex + 1);
+            thumbnailName = String.format("%s_%s.%s", fileName.substring(0, dotIndex), suffix, fileExt);
+        }
+        else
+        {
+            thumbnailName = String.format("%s_%s", fileName, suffix);
+        }
+        return thumbnailName;
     }
 
     /**

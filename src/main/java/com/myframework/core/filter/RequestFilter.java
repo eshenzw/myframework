@@ -2,6 +2,7 @@ package com.myframework.core.filter;
 
 import com.myframework.core.common.utils.LocalhostIpFetcher;
 import com.myframework.core.db.multi.DataSourceHolder;
+import com.myframework.core.entity.BaseUserEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -129,6 +130,25 @@ public class RequestFilter implements Filter {
 
     public static String getCurrentToken() {
         return currentToken.get();
+    }
+
+    public static BaseUserEntity getSessionUser() {
+        // TODO Auto-generated method stub
+        HttpSession session = getRequest().getSession();
+        BaseUserEntity user = (BaseUserEntity)session.getAttribute(BaseUserEntity.USER_SESSION_BEAN);
+        return user;
+    }
+
+    public static void setSessionUser(BaseUserEntity user) {
+        // TODO Auto-generated method stub
+        HttpSession session = getSession();
+        if(user != null){
+            session.setAttribute(BaseUserEntity.USER_SESSION_ID, user.getUserId());
+            session.setAttribute(BaseUserEntity.USER_SESSION_BEAN, user);
+        }else{
+            session.setAttribute(BaseUserEntity.USER_SESSION_ID, null);
+            session.setAttribute(BaseUserEntity.USER_SESSION_BEAN, null);
+        }
     }
 
     /**

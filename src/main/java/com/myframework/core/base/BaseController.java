@@ -68,21 +68,12 @@ public abstract class BaseController {
 
 	public BaseUserEntity getSessionUser() {
 		// TODO Auto-generated method stub
-    	HttpSession session = this.getRequest().getSession();
-        BaseUserEntity user = (BaseUserEntity)session.getAttribute(BaseUserEntity.USER_SESSION_BEAN);
-		return user;
+		return RequestFilter.getSessionUser();
 	}
 
 	public void setSessionUser(BaseUserEntity user) {
 		// TODO Auto-generated method stub
-		HttpSession session = this.getRequest().getSession();
-		if(user != null){
-			session.setAttribute(BaseUserEntity.USER_SESSION_ID, user.getUserId());
-			session.setAttribute(BaseUserEntity.USER_SESSION_BEAN, user);
-		}else{
-			session.setAttribute(BaseUserEntity.USER_SESSION_ID, null);
-			session.setAttribute(BaseUserEntity.USER_SESSION_BEAN, null);
-		}
+		RequestFilter.setSessionUser(user);
 	}
 
 	public void setCookieUserId(String id) {
