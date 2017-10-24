@@ -35,6 +35,8 @@ public class RequestFilter implements Filter {
     private static final ThreadLocal<HttpServletResponse> responseLocal = new ThreadLocal<HttpServletResponse>();
     /***/
     private static final ThreadLocal<String> currentToken = new ThreadLocal<String>();
+    /***/
+    private static final ThreadLocal<BaseUserEntity> currentUser = new ThreadLocal<BaseUserEntity>();
     /*本机网卡ip*/
     private static String localIp = LocalhostIpFetcher.fetchLocalIP();
 
@@ -134,21 +136,27 @@ public class RequestFilter implements Filter {
 
     public static BaseUserEntity getSessionUser() {
         // TODO Auto-generated method stub
-        HttpSession session = getRequest().getSession();
-        BaseUserEntity user = (BaseUserEntity)session.getAttribute(BaseUserEntity.USER_SESSION_BEAN);
+        HttpSession session = getSession();
+        BaseUserEntity user = currentUser.get();
+        if(session != null){
+            user = (BaseUserEntity)session.getAttribute(BaseUserEntity.USER_SESSION_BEAN);
+        }
         return user;
     }
 
     public static void setSessionUser(BaseUserEntity user) {
         // TODO Auto-generated method stub
         HttpSession session = getSession();
-        if(user != null){
-            session.setAttribute(BaseUserEntity.USER_SESSION_ID, user.getUserId());
-            session.setAttribute(BaseUserEntity.USER_SESSION_BEAN, user);
-        }else{
-            session.setAttribute(BaseUserEntity.USER_SESSION_ID, null);
-            session.setAttribute(BaseUserEntity.USER_SESSION_BEAN, null);
+        if(session != null){
+            if(user != null){
+                session.setAttribute(BaseUserEntity.USER_SESSION_ID, user.getUserId());
+                session.setAttribute(BaseUserEntity.USER_SESSION_BEAN, user);
+            }else{
+                session.setAttribute(BaseUserEntity.USER_SESSION_ID, null);
+                session.setAttribute(BaseUserEntity.USER_SESSION_BEAN, null);
+            }
         }
+        currentUser.set(user);
     }
 
     /**
@@ -160,6 +168,7 @@ public class RequestFilter implements Filter {
         responseLocal.remove();
 
         currentToken.remove();
+        currentUser.remove();
 
         // 清理掉数据源相关的
         DataSourceHolder.clearThreadLocal();

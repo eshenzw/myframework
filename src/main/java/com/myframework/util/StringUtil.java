@@ -3,6 +3,7 @@ package com.myframework.util;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.regex.Matcher;
@@ -17,7 +18,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * 字符串公用操作.
- * 
+ *
  * @DateTime: 2011-3-4
  * @author author
  * @version 1.0
@@ -53,7 +54,7 @@ public final class StringUtil
 
 	/**
 	 * 如果对象Null或"null"返回空字符串.
-	 * 
+	 *
 	 * @param obj
 	 *            需要toString的对象
 	 * @return string 返回非空的字符串
@@ -65,7 +66,7 @@ public final class StringUtil
 
 	/**
 	 * Not null.
-	 * 
+	 *
 	 * @param obj
 	 *            the obj
 	 * @param stutas
@@ -95,7 +96,7 @@ public final class StringUtil
 
 	/**
 	 * 是否为空
-	 * 
+	 *
 	 * @param obj
 	 *            对象
 	 * @return 是否为空
@@ -115,7 +116,7 @@ public final class StringUtil
 
 	/**
 	 * 对象转换为String字符串
-	 * 
+	 *
 	 * @param value
 	 *            输入对象
 	 * @return String
@@ -127,7 +128,7 @@ public final class StringUtil
 
 	/**
 	 * Checks if is empty.
-	 * 
+	 *
 	 * @param str
 	 *            the str
 	 * @return true, if is empty
@@ -139,7 +140,7 @@ public final class StringUtil
 
 	/**
 	 * Checks if is not empty.
-	 * 
+	 *
 	 * @param str
 	 *            the str
 	 * @return true, if is not empty
@@ -177,7 +178,7 @@ public final class StringUtil
 	 * 方法定义：toBoolean<br>
 	 * 用途说明： 将字符串y|yes|true|1 转换成true否则false<br>
 	 * 例如：toBoolean("y") 返回true.
-	 * 
+	 *
 	 * @param theString
 	 *            需要判断的字符串
 	 * @return boolean 返回布尔值true|false
@@ -199,7 +200,7 @@ public final class StringUtil
 
 	/**
 	 * 对象转换为boolean型变量
-	 * 
+	 *
 	 * @param obj
 	 *            对象
 	 * @return Boolean
@@ -215,7 +216,7 @@ public final class StringUtil
 
 	/**
 	 * 处理字符串，为null时返回空串
-	 * 
+	 *
 	 * @param s
 	 *            输入字符串
 	 * @return 处理结果字符串
@@ -227,7 +228,7 @@ public final class StringUtil
 
 	/**
 	 * 带默认值处理字符，为null时返回默认值
-	 * 
+	 *
 	 * @param s
 	 *            输入字符串
 	 * @param defaultValue
@@ -245,7 +246,7 @@ public final class StringUtil
 
 	/**
 	 * 使用分隔符连接字符串
-	 * 
+	 *
 	 * @param arrays
 	 *            字符数组
 	 * @param split
@@ -275,7 +276,7 @@ public final class StringUtil
 
 	/**
 	 * 将字符串按指定加密类型加密支持MD5 SHA-1.
-	 * 
+	 *
 	 * @param data
 	 *            需要Hash的字符串
 	 * @param type
@@ -302,7 +303,7 @@ public final class StringUtil
 
 	/**
 	 * 字符串不能为"" 或 null 如果是则返回异常.
-	 * 
+	 *
 	 * @param theString
 	 *            需要断言的字符串
 	 * @param theMessage
@@ -324,7 +325,7 @@ public final class StringUtil
 
 	/**
 	 * 判断指定的String是否为一个Integer 整数.
-	 * 
+	 *
 	 * @param theString
 	 *            需要断言的字符串
 	 * @param theMessage
@@ -350,7 +351,7 @@ public final class StringUtil
 
 	/**
 	 * 判断指定的String是否为一个boolean.
-	 * 
+	 *
 	 * @param theString
 	 *            需要断言的字符串
 	 * @param theMessage
@@ -373,7 +374,7 @@ public final class StringUtil
 	/**
 	 * 用于把Request para 的encoding <br>
 	 * 从缺省的ISO8859-5 转换为指定的Encoding.
-	 * 
+	 *
 	 * @param value
 	 *            the value
 	 * @param newEncoding
@@ -403,7 +404,7 @@ public final class StringUtil
 
 	/**
 	 * 字节数组转换为十六进制字符串.
-	 * 
+	 *
 	 * @param hash
 	 *            需要转换的字节数组
 	 * @return 返回的十六进制字符串
@@ -425,7 +426,7 @@ public final class StringUtil
 
 	/**
 	 * 字节数组转换为字符串 byteToString
-	 * 
+	 *
 	 * @param by
 	 *            字节数组
 	 * @param encode
@@ -447,7 +448,7 @@ public final class StringUtil
 
 	/**
 	 * 字节数组转换为字符串 byteToString
-	 * 
+	 *
 	 * @param by
 	 *            字节数组
 	 * @return 字节数组转换为默认utf8字符串
@@ -518,7 +519,7 @@ public final class StringUtil
 	 * <td>"&amp;nbsp;" </td>
 	 * </tr>
 	 * </table>.
-	 * 
+	 *
 	 * @param value
 	 *            目标字符串
 	 * @return 返回字符串
@@ -585,7 +586,7 @@ public final class StringUtil
 
 	/**
 	 * 对目前的支持Word联动的HTML编辑器的Filter功能.
-	 * 
+	 *
 	 * @param value
 	 *            the value
 	 * @return String
@@ -628,7 +629,7 @@ public final class StringUtil
 
 	/**
 	 * 数字转换成字母.
-	 * 
+	 *
 	 * @param number
 	 *            the number
 	 * @param upperCaseFlag
@@ -656,7 +657,7 @@ public final class StringUtil
 
 	/**
 	 * 取得汉字拼音的首字母.
-	 * 
+	 *
 	 * @param strCn
 	 *            the str cn
 	 * @return the PY prefix
@@ -685,7 +686,7 @@ public final class StringUtil
 
 	/**
 	 * 字符串转换成整数.
-	 * 
+	 *
 	 * @param value
 	 *            the value
 	 * @return the integer
@@ -712,7 +713,7 @@ public final class StringUtil
 
 	/**
 	 * 字符串转换成长整数.
-	 * 
+	 *
 	 * @param value
 	 *            the value
 	 * @return the long
@@ -739,7 +740,7 @@ public final class StringUtil
 
 	/**
 	 * 字符串转换成小数.
-	 * 
+	 *
 	 * @param value
 	 *            the value
 	 * @return the big decimal
@@ -766,7 +767,7 @@ public final class StringUtil
 
 	/**
 	 * 字符串转换成短整数.
-	 * 
+	 *
 	 * @param value
 	 *            the value
 	 * @return the short
@@ -793,7 +794,7 @@ public final class StringUtil
 
 	/**
 	 * 字符串转换成短整数.
-	 * 
+	 *
 	 * @param value
 	 *            the value
 	 * @return the byte[]
@@ -812,7 +813,7 @@ public final class StringUtil
 
 	/**
 	 * To string.
-	 * 
+	 *
 	 * @param object
 	 *            object
 	 * @return string
@@ -829,7 +830,7 @@ public final class StringUtil
 
 	/**
 	 * 特殊字符转义.
-	 * 
+	 *
 	 * @param specialCharacters
 	 *            包含特殊字符的字符串
 	 * @return 返回转义后的字符串
@@ -851,7 +852,7 @@ public final class StringUtil
 
 	/**
 	 * 用给定的分割符连接集合中Bean的属性值
-	 * 
+	 *
 	 * @param coll
 	 *            Bean集合
 	 * @param propertyName
@@ -949,7 +950,7 @@ public final class StringUtil
 
 	/**
 	 * 判断字符串是否为安全字符 允许输入数字、大小写英文字母、下划线
-	 * 
+	 *
 	 * @param s
 	 *            字符串
 	 * @return 是否匹配
@@ -968,7 +969,7 @@ public final class StringUtil
 
 	/**
 	 * 判断字符串是否为安全字符 允许输入中文、数字、大小写英文字母、下划线
-	 * 
+	 *
 	 * @param s
 	 *            字符串
 	 * @return 是否匹配
@@ -1001,7 +1002,7 @@ public final class StringUtil
 
 	/**
 	 * 校验是否11位手机号码
-	 * 
+	 *
 	 * @param s
 	 *            待校验手机号码字符串
 	 * @return 是否匹配
@@ -1020,7 +1021,7 @@ public final class StringUtil
 
 	/**
 	 * 提取文件的后缀
-	 * 
+	 *
 	 * @param fileName
 	 *            文件名
 	 * @return 文件扩展名，无扩展名时返回空串
@@ -1041,7 +1042,7 @@ public final class StringUtil
 
 	/**
 	 * 用分隔符将字符串转为Long型数组
-	 * 
+	 *
 	 * @param str
 	 *            字符串列表
 	 * @param regex
@@ -1078,7 +1079,7 @@ public final class StringUtil
 
 	/**
 	 * 去掉字符串首尾空格
-	 * 
+	 *
 	 * @param value
 	 *            源字符串
 	 * @return 去掉字符串首尾空格，字符串为NULL或空值时直接返回
@@ -1097,7 +1098,7 @@ public final class StringUtil
 
 	/**
 	 * 将Object对象转换为Long对象
-	 * 
+	 *
 	 * @param o
 	 *            源数据对象
 	 * @return 目标Long型数据 异常时返回-1
@@ -1128,7 +1129,7 @@ public final class StringUtil
 
 	/**
 	 * 将Object对象转换为Integer对象
-	 * 
+	 *
 	 * @param o
 	 *            源数据对象
 	 * @return 目标Integer数据，异常时返回-1
@@ -1170,7 +1171,7 @@ public final class StringUtil
 
 	/***************************************************************************
 	 * 比较版本号
-	 * 
+	 *
 	 * @param ver1
 	 * @param ver2
 	 * @return 1 0 -1
@@ -1209,7 +1210,7 @@ public final class StringUtil
 
 	/**
 	 * 格式化HTML,过滤非法的HTML节点
-	 * 
+	 *
 	 * @param content
 	 *            原始内容
 	 * @return 过滤后内容
@@ -1249,5 +1250,28 @@ public final class StringUtil
 			chs[i] = strs[ds.intValue()];
 		}
 		return new String(chs);
+	}
+
+	/**
+	 * 返回byte的数据大小对应的文本
+	 * @param size
+	 * @return
+	 */
+	public static String getDataSize(long size){
+		DecimalFormat formater = new DecimalFormat("####.00");
+		if(size<1024){
+			return size+"bytes";
+		}else if(size<1024*1024){
+			float kbsize = size/1024f;
+			return formater.format(kbsize)+"KB";
+		}else if(size<1024*1024*1024){
+			float mbsize = size/1024f/1024f;
+			return formater.format(mbsize)+"MB";
+		}else if(size<1024*1024*1024*1024){
+			float gbsize = size/1024f/1024f/1024f;
+			return formater.format(gbsize)+"GB";
+		}else{
+			return "size: error";
+		}
 	}
 }
