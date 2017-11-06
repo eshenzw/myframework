@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.myframework.exception.RtException;
+import com.myframework.util.StringUtil;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -18,10 +20,13 @@ public class CustomJsonDateDeserializer extends JsonDeserializer {
     public Date deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String date = jp.getText();
+        if (StringUtil.isNullOrEmpty(date)) {
+            return null;
+        }
         try {
             return format.parse(date);
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new RtException("格式化日期出错!");
         }
     }
 }

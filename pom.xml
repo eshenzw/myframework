@@ -154,7 +154,7 @@
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4</version>
+            <version>1.4.7</version>
         </dependency>
         <!-- 导入java ee jar 包 -->
         <dependency>
@@ -436,6 +436,12 @@
             <groupId>com.cloudhopper.proxool</groupId>
             <artifactId>proxool</artifactId>
             <version>0.9.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>geronimo-spec</groupId>
+                    <artifactId>geronimo-spec-javamail</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.github.jsqlparser</groupId>

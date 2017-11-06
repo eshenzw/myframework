@@ -191,7 +191,8 @@ public class EmailSender {
         props.put("mail.smtp.socketFactory.port", sslport);  
         Session session = Session.getInstance(props,  
                 new Authenticator() {  
-                    public PasswordAuthentication getPasswordAuthentication() {  
+                    @Override
+                    public PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication(username, password);  
                     }  
                 });  
