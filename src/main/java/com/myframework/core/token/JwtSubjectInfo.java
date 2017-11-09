@@ -34,21 +34,27 @@ public class JwtSubjectInfo {
 
     public TokenDevice getDevice() {
         if (device == null && RequestFilter.getRequest() != null) {
-            String platform = TokenDevice.UNKNOWN;
-            if (DeviceUtil.isMobileDevice(RequestFilter.getRequest())) {
-                if (DeviceUtil.isIOSDevice(RequestFilter.getRequest())) {
-                    platform = TokenDevice.IOS;
-                } else if (DeviceUtil.isAndroidDevice(RequestFilter.getRequest())) {
-                    platform = TokenDevice.ANDROID;
-                } else if (DeviceUtil.isWeChat(RequestFilter.getRequest())) {
-                    platform = TokenDevice.WEIXIN;
-                }
-            } else {
-                platform = TokenDevice.WEB;
-            }
-            device = new TokenDevice(platform);
+            device = new TokenDevice(getPlatform());
         }
         return device;
+    }
+
+    public static String getPlatform(){
+        String platform = TokenDevice.UNKNOWN;
+        if (DeviceUtil.isMobileDevice(RequestFilter.getRequest())) {
+            if (DeviceUtil.isIOSDevice(RequestFilter.getRequest())) {
+                platform = TokenDevice.IOS;
+            } else if (DeviceUtil.isAndroidDevice(RequestFilter.getRequest())) {
+                platform = TokenDevice.ANDROID;
+            } else if (DeviceUtil.isWeChat(RequestFilter.getRequest())) {
+                platform = TokenDevice.WEIXIN;
+            } else if (DeviceUtil.isApp(RequestFilter.getRequest())) {
+                platform = TokenDevice.APP;
+            }
+        } else {
+            platform = TokenDevice.WEB;
+        }
+        return platform;
     }
 
     public void setDevice(TokenDevice device) {

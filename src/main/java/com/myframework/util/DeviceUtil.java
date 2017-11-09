@@ -195,4 +195,15 @@ public class DeviceUtil {
         String userAgent = request.getHeader("user-agent").toLowerCase();
         return userAgent == null || userAgent.indexOf("micromessenger") == -1 ? false : true;
     }
+
+    /**
+     * 判断是否是App访问
+     *
+     * @param request
+     * @return
+     */
+    public static boolean isApp(HttpServletRequest request) {
+        String userAgent = request.getHeader("user-agent").toLowerCase();
+        return userAgent == null || userAgent.indexOf("myapp") == -1 ? false : true;
+    }
 }

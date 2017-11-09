@@ -5,6 +5,7 @@ import com.myframework.core.token.annotation.IgnoreTokenAuth;
 import com.myframework.core.token.annotation.WithTokenAuth;
 import com.myframework.core.token.exception.TokenException;
 import com.myframework.core.token.strategy.TokenStrategyExecutor;
+import com.myframework.util.DeviceUtil;
 import com.myframework.util.RespUtil;
 import com.myframework.util.SpringContextUtil;
 import com.myframework.util.StringUtil;
@@ -21,6 +22,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * 权限(Token)验证
@@ -158,22 +160,22 @@ public class TokenAuthInterceptor extends HandlerInterceptorAdapter {
             }
 
         }
-
-        redirectTo(request, response, e, TokenDevice.UNKNOWN);
-
+        redirectTo(request, response, e, JwtSubjectInfo.getPlatform());
     }
 
     protected void redirectTo(HttpServletRequest request, HttpServletResponse response, TokenException e,
                               String audience) throws IOException {
-        ITokenValidRedirect irediret = null;
+        Collection<ITokenValidRedirect> irediretImpls = null;
         try {
-            irediret = SpringContextUtil.getBean(ITokenValidRedirect.class);
+            irediretImpls = SpringContextUtil.getContext().getBeansOfType(ITokenValidRedirect.class, false, false).values();
         } catch (Exception e1) {
             logger.info("应用没有实现 ITokenValidRedirect，进行默认跳转操作 ");
         }
-        if (irediret != null) {
-            // 可在应用注入该bean实现类，进行自定义跳转
-            irediret.redirect(request, response, e, audience);
+        if (irediretImpls != null && irediretImpls.size() > 0) {
+            for (ITokenValidRedirect irediret : irediretImpls) {
+                // 可在应用注入该bean实现类，进行自定义跳转
+                irediret.redirect(request, response, e, audience);
+            }
         } else {
             // 提供redirect 默认跳转实现
             TokenDevice device = new TokenDevice(audience);

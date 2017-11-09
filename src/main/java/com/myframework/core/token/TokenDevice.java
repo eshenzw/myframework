@@ -13,6 +13,7 @@ public class TokenDevice implements Device {
     public static final String IOS = "ios";
     public static final String WEIXIN = "weixin";
     public static final String TABLET = "tablet";
+    public static final String APP = "app";
     public static final String UNKNOWN = "unknown";
 
     private String platform;
@@ -31,12 +32,28 @@ public class TokenDevice implements Device {
 
     @Override
     public boolean isMobile() {
-        return ANDROID.equals(platform) || IOS.equals(platform);
+        return ANDROID.equals(platform) || IOS.equals(platform) || APP.equals(platform);
     }
 
     @Override
     public boolean isTablet() {
         return TABLET.equals(platform);
+    }
+
+    public boolean isAndroid() {
+        return ANDROID.equals(platform);
+    }
+
+    public boolean isIOS() {
+        return IOS.equals(platform);
+    }
+
+    public boolean isWeixin() {
+        return WEIXIN.equals(platform);
+    }
+
+    public boolean isApp() {
+        return APP.equals(platform);
     }
 
     @Override
