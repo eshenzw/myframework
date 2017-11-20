@@ -40,4 +40,10 @@
 
     <bean name="baseTokenStrategy" class="com.myframework.core.token.strategy.impl.BaseTokenStrategy"></bean>
 
+    <!-- 防止重复提交 -->
+    <bean name="repeatCheckHandler" class="com.myframework.core.repeat.RepeatCheckHandler"></bean>
+    <bean name="repeatCheckInterceptor" class="com.myframework.core.repeat.RepeatCheckInterceptor">
+        <property name="repeatCheckHandler" ref="repeatCheckHandler"></property>
+    </bean>
+
 </beans>
